@@ -1,3 +1,6 @@
+--// Modified by biggaboy212
+--// Add under any frame to apply | added 'GenerateGUID' for simplicity and UD.
+
 local RunService = game:GetService('RunService')
 local HS = game:GetService('HttpService')
 local camera = workspace.CurrentCamera
