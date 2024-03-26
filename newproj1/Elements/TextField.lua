@@ -1,4 +1,4 @@
--- thx chatgpt for gsub i aint doin allat
+-- thx chatgpt for gsub
 
 local TweenService = game:GetService("TweenService")
 --
