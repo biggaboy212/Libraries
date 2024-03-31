@@ -2,7 +2,6 @@
 local library = {
     loadstring(game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua"))(),
     title = "KarpiWare V5 | Early-Access",
-    Introduction()
 }
 local Notif = library:InitNotifications()
 
@@ -10,6 +9,7 @@ Notif:Notify("Loading", 3, "information")
 
 library.title = "KarpiWare V5 | Early-Access"
 
+library:Introduction()
 --
 task.wait(1)
 local Init = library:Init()
