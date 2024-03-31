@@ -15,14 +15,24 @@ task.wait(1)
 local Init = library:Init()
 --
 
+-- Tabs
 local Combat = Init:NewTab("Combat")
 local Movement = Init:NewTab("Movement")
 local Visuals = Init:NewTab("Visuals")
 local Misc = Init:NewTab("Misc")
 local Settings = Init:NewTab("Settings")
 
+-- Combat Tab Sections
+local CombatSection = Combat:NewSection("Main")
 
-local Section1 = Tab1:NewSection("Example Components")
+-- Settings Tab Sections
+local SettingsSection = Combat:NewSection("Main")
+
+--// Elements
+SettingSection:AddButton("Exit KarpiWare", function() library:Remove() end)
+
+
+
 
 -- // FUNCTION DOCS: 
 --[[
