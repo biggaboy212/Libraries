@@ -25,10 +25,10 @@ local Settings = Init:NewTab("Settings")
 local CombatSection = Combat:NewSection("Main")
 
 -- Settings Tab Sections
-local SettingsSection = Combat:NewSection("Main")
+local SettingsSection = Settings:NewSection("Main")
 
 --// Elements
-SettingSection:AddButton("Exit KarpiWare", function() library:Remove() end)
+SettingsSection:AddButton("Exit KarpiWare", function() library:Remove() end)
 
 
 
