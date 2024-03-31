@@ -1,3 +1,23 @@
+--// Variables
+local HttpService = game:GetService("HttpService");
+local others = game:GetService("Players")
+local plr1 = others.LocalPlayer
+local character = plr1.Character
+local humanoid = character.Humanoid
+local currentcamera = game.Workspace.CurrentCamera
+local espog = false
+local esp = false
+local lines = false
+local target = nil
+local foundtarg = nil
+local mgogpos = nil
+local autofarm = false
+local Waypoints = {
+
+}
+
+--// Functions
+
 --// Library Startup
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua"))()
 library.title = "KarpiWare V5 | Early-Access"
@@ -23,13 +43,39 @@ local Settings = Init:NewTab("Settings")
 
 -- Combat Tab Sections
 local CombatSection = Combat:NewSection("Main")
+local CombatSection2 = Combat:NewSection("Misc")
 
 -- Settings Tab Sections
 local SettingsSection = Settings:NewSection("Main")
 
 --// Elements
-Settings:NewButton("Exit KarpiWare", function() library:Remove() end)
+local a1 = CombatSection:NewButton("Button", function()
+    print("1")
+end)
 
+local a2 = CombatSection:NewButton("Button2", function()
+    print("2")
+end)
+
+local a3 = CombatSection:NewButton("Button3", function()
+    print("3")
+end)
+
+local a4 = CombatSection:NewButton("Button4", function()
+    print("4")
+end)
+
+local a5 = CombatSection:NewButton("Button5", function()
+    print("5")
+end)
+
+local a6 = CombatSection:NewButton("Button6", function()
+    print("6")
+end)
+
+local b1 = CombatSection2:NewButton("Button1", function()
+    print("123122")
+end)
 
 
 
