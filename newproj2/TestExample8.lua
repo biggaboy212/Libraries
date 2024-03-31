@@ -28,7 +28,9 @@ local CombatSection = Combat:NewSection("Main")
 local SettingsSection = Settings:NewSection("Main")
 
 --// Elements
-local Settings_Exit = Settings:AddButton("Exit KarpiWare", function() library:Remove() end)
+Settings:AddButton("Exit KarpiWare", function() 
+    library:Remove() 
+end)
 
 
 
