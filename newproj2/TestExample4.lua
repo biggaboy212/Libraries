@@ -1,8 +1,7 @@
 --// Library Startup
-local library = {
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua"))(),
-    title = "KarpiWare V5 | Early-Access",
-}
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua"))()
+library.title = "KarpiWare V5 | Early-Access"
+
 local Notif = library:InitNotifications()
 
 Notif:Notify("Loading", 3, "information")
