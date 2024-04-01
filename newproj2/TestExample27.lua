@@ -6,6 +6,8 @@ local character = localPlayer.Character
 local humanoid = character:FindFirstChildOfClass("Humanoid")
 local backpack = localPlayer.Backpack or localPlayer.Character
 
+local UserInputService = game:GetService("UserInputService")
+
 local ScriptVariables = {
     InvisKillEnabled = false,
     OriginalPosition = nil
@@ -30,17 +32,15 @@ local Misc = Init:NewTab("Misc"); local MiscSection = Misc:NewSection("Misc")
 local Settings = Init:NewTab("Settings"); local SettingsSection = Settings:NewSection("Settings")
 
 --// Elements
-local mouse = localPlayer:GetMouse()
-
 local function InvisKillLogic(key)
     local PPname = "[Revolver]"
     local char = localPlayer.Character
     local hum = char:FindFirstChildOfClass("HumanoidRootPart")
     local bp = backpack
 
-    mouse.KeyDown:Connect(function(press)
-        if press == key and ScriptVariables.InvisKillEnabled then
-            if mouse.Target then
+    UserInputService.InputBegan:Connect(function(input, processed)
+        if not processed and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == key and ScriptVariables.InvisKillEnabled then
+            if char and hum and bp then
                 ScriptVariables.OriginalPosition = hum.CFrame
                 hum.CFrame = CFrame.new(mouse.Hit.x, mouse.Hit.y + 5, mouse.Hit.z)
                 local revolver = bp[PPname] or char[PPname]
@@ -61,7 +61,6 @@ end)
 Combat:NewToggle("InvisKill V2", false, function(value)
     ScriptVariables.InvisKillEnabled = value
 end)
-
 
 
 
