@@ -1,15 +1,15 @@
 --// Variables
-local HttpService = game:GetService("HttpService");
-local others = game:GetService("Players")
-local plr1 = others.LocalPlayer
-local character = plr1.Character
-local humanoid = character.Humanoid
+local HttpService = game:GetService("HttpService")
+local players = game:GetService("Players")
+local localPlayer = players.LocalPlayer
+local character = localPlayer.Character
+local humanoid = character:FindFirstChildOfClass("Humanoid")
+local backpack = localPlayer.Backpack or localPlayer.Character
+
 local ScriptVariables = {
     InvisKillEnabled = false,
     OriginalPosition = nil
 }
-
---// Functions
 
 --// Library Startup
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua"))()
@@ -19,10 +19,9 @@ local Notif = library:InitNotifications()
 Notif:Notify("Loading", 3, "information")
 
 library:Introduction()
---
 task.wait(1)
 local Init = library:Init()
---
+
 -- Tabs
 local Combat = Init:NewTab("Combat"); local CombatSection = Combat:NewSection("Main")
 local Movement = Init:NewTab("Movement"); local MovementSection = Movement:NewSection("Movement")
@@ -31,53 +30,39 @@ local Misc = Init:NewTab("Misc"); local MiscSection = Misc:NewSection("Misc")
 local Settings = Init:NewTab("Settings"); local SettingsSection = Settings:NewSection("Settings")
 
 --// Elements
-Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(key)
-   if ScriptVariables.InvisKillEnabled then
-        local PPname = "[Revolver]"
-        print('1')
-        local plr = plr1
-        print('2')
-        local char = plr.Character
-        print('3')
-        local hum = char.HumanoidRootPart
-        print('4')
-        local bp = plr.Backpack
-        print('5')
-        local mouse = plr:GetMouse()
-        print('6')
-        mouse.KeyDown:Connect(function(press)
-            print('7')
-            if press == key then
-                print('8')
-                if mouse.Target then
-                    print('9')
-                ScriptVariables.OriginalPosition = hum.CFrame
-                print('10')
-                hum.CFrame = CFrame.new(mouse.Hit.x, mouse.Hit.y + 5, mouse.Hit.z)
-                print('11')
-                    local revolver = bp[PPname] or char[PPname]
-                    print('12')
-                    local PPlocation = char:WaitForChild(PPname) or bp:WaitForChild(PPname)
-                    print('13')
-                        revolver.Parent = char
-                        print('14')
-                        PPlocation:Activate()
-                        print('15')
+local mouse = localPlayer:GetMouse()
 
-                        character.Humanoid:UnequipTools()
-                        print('16')
-                        
-                        hum.CFrame = CFrame.new(ScriptVariables.OriginalPosition)
-                        print('end')
-                end
+local function InvisKillLogic(key)
+    local PPname = "[Revolver]"
+    local char = localPlayer.Character
+    local hum = char:FindFirstChildOfClass("HumanoidRootPart")
+    local bp = backpack
+
+    mouse.KeyDown:Connect(function(press)
+        if press == key and ScriptVariables.InvisKillEnabled then
+            if mouse.Target then
+                ScriptVariables.OriginalPosition = hum.CFrame
+                hum.CFrame = CFrame.new(mouse.Hit.x, mouse.Hit.y + 5, mouse.Hit.z)
+                local revolver = bp[PPname] or char[PPname]
+                local PPlocation = char:WaitForChild(PPname) or bp:WaitForChild(PPname)
+                revolver.Parent = char
+                PPlocation:Activate()
+                character.Humanoid:UnequipTools()
+                hum.CFrame = CFrame.new(ScriptVariables.OriginalPosition)
             end
-        end)
-   end
+        end
+    end)
+end
+
+Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(key)
+    InvisKillLogic(key)
 end)
 
 Combat:NewToggle("InvisKill V2", false, function(value)
-ScriptVariables.InvisKillEnabled = value
+    ScriptVariables.InvisKillEnabled = value
 end)
+
+
 
 
 --[[
