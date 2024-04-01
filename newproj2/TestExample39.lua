@@ -65,6 +65,7 @@ Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(key)
             end
         end
     end)
+end)
 
 Combat:NewToggle("InvisKill V2", false, function(value)
 ScriptVariables.InvisKillEnabled = value
