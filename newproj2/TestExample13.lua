@@ -1,4 +1,4 @@
-loadstring(game:HttpGet('https://raw.githubusercontent.com/biggaboy212/Roblox-UI-Libs/main/Jan%20Lib/Jan%20Lib%20Source.lua'))()
+local library = loadstring(game:HttpGet('https://raw.githubusercontent.com/biggaboy212/Roblox-UI-Libs/main/Jan%20Lib/Jan%20Lib%20Source.lua'))()
 -- [Legit Tab UI] ------------------------------------------------------------------------------------------------------------------------------------------------------------
 local LegitTab = library:AddTab("Legit"); 
 local LegitColunm1 = LegitTab:AddColumn();
