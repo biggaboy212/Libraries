@@ -1,11 +1,8 @@
 --// Variables
-local Version = '42'
+local Version = '43'
 local HttpService = game:GetService("HttpService")
 local players = game:GetService("Players")
-local localPlayer = players.LocalPlayer
-local character = localPlayer.Character
-local humanoid = character:FindFirstChildOfClass("Humanoid")
-local backpack = localPlayer.Backpack or localPlayer.Character
+
 print('Version'..Version)
 
 local UIS = game:GetService("UserInputService")
@@ -40,25 +37,27 @@ local Settings = Init:NewTab("Settings"); local SettingsSection = Settings:NewSe
 
 --// Elements
 Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(input)
-    print(input)
-    local PPname = "[Revolver]"
-    local char = localPlayer.Character
-    local hum = char:FindFirstChildOfClass("HumanoidRootPart")
-    local bp = backpack
-    local mouse = localPlayer:GetMouse()
     mouse.KeyDown:connect(function(Key)
-        print('keydown for '.. string.upper(Key) .. ' Reacting to '.. input) 
         if tostring(string.upper(Key)) == tostring(input) then
-            print('right key') 
             if mouse.Target then
+                local localPlayer = players.LocalPlayer
+                local PPname = "[Revolver]"
+                local char = localPlayer.Character
+                if not char then return end -- Check if the character exists
+                local hum = char:FindFirstChildOfClass("HumanoidRootPart")
+                if not hum then return end -- Check if the humanoid root part exists
+                local bp = localPlayer.Backpack or localPlayer.Character
+                local mouse = localPlayer:GetMouse()
+
                 ScriptVariables.OriginalPosition = hum.CFrame
                 hum.CFrame = CFrame.new(mouse.Hit.x, mouse.Hit.y, mouse.Hit.z)
+                
                 local revolver = bp[PPname] or char[PPname]
                 local PPlocation = char:WaitForChild(PPname) or bp:WaitForChild(PPname)
                 revolver.Parent = char
                 PPlocation:Activate()
 
-                character.Humanoid:UnequipTools()
+                char.Humanoid:UnequipTools()
                             
                 hum.CFrame = CFrame.new(ScriptVariables.OriginalPosition)
                 print('end')
