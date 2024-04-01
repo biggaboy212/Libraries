@@ -1,5 +1,5 @@
 --// Variables
-local Version = '5.53'
+local Version = '5.54'
 local HttpService = game:GetService("HttpService")
 local runService = game:GetService("RunService");
 local players = game:GetService("Players")
@@ -82,7 +82,7 @@ local Settings = Init:NewTab("Settings"); local SettingsSection = Settings:NewSe
 
 
 --// Elements
-local PlayerList = Combat:NewSelector("Selector 1", "bungie", {players:GetChildren()}, function(d)
+local PlayerList = Combat:NewSelector("Selector 1", "bungie", players:GetChildren(), function(d)
     ScriptVariables.CurrentTarget = d
     ESPTarget(d)
 end)
@@ -96,7 +96,7 @@ players.PlayerAdded:Connect(function ()
 end)
 players.PlayerRemoving:Connect(function ()
     PlayerList:Remove()
-    PlayerList = Combat:NewSelector("Selector 1", "bungie", {players:GetChildren()}, function(d)
+    PlayerList = Combat:NewSelector("Selector 1", "bungie", players:GetChildren(), function(d)
         ScriptVariables.CurrentTarget = d
         ESPTarget(d)
     end)
