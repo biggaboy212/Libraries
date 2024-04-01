@@ -1,5 +1,5 @@
 --// Variables
-local Version = '31'
+local Version = '32'
 local HttpService = game:GetService("HttpService")
 local players = game:GetService("Players")
 local localPlayer = players.LocalPlayer
@@ -8,7 +8,7 @@ local humanoid = character:FindFirstChildOfClass("Humanoid")
 local backpack = localPlayer.Backpack or localPlayer.Character
 print('Version'..Version)
 
-local UserInputService = game:GetService("UserInputService")
+local UIS = game:GetService("UserInputService")
 
 local ScriptVariables = {
     InvisKillEnabled = false,
