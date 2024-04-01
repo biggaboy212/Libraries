@@ -1,5 +1,5 @@
 --// Variables
-local Version = '5.57'
+local Version = '5.58'
 local HttpService = game:GetService("HttpService")
 local runService = game:GetService("RunService");
 local players = game:GetService("Players")
@@ -13,16 +13,10 @@ local ScriptVariables = {
     CurrentTarget = nil,
     BlatantLock = nil,
     DynamicColour = nil,
-    PlayerList = {},
+    TargetSetKey = nil
 }
 
 --// Functions
-local function ClearTable(tbl)
-    for key in pairs(tbl) do
-        tbl[key] = nil
-    end
-end
-
 function ESPTarget(arg1)
     local FillColor = Color3.fromRGB(145, 0, 255)
     local DepthMode = "AlwaysOnTop"
@@ -67,6 +61,62 @@ end)
 Highlight(arg1)
 end
 
+function Start(key)
+	local Folder = Instance.new('Folder')
+	Folder.Parent = workspace
+	local Highlight = Instance.new("Highlight")
+	Highlight.FillColor = Color3.fromRGB(255, 255, 255)
+	Highlight.FillTransparency = 0.6
+	Highlight.Parent = Folder
+
+	local Key = key
+
+	local plrs = game:GetService('Players')
+	local hrp = plrs.LocalPlayer.Character:FindFirstChild('HumanoidRootPart')
+
+	local highlightPart = Highlight
+	highlightPart.Parent = Folder
+
+	local mouse = plrs.LocalPlayer:GetMouse()
+	local userInputService = game:GetService('UserInputService')
+
+	local function update()
+		local Target = mouse.Target
+		if Target and Target:FindFirstAncestorOfClass("Model") then
+			local model = Target:FindFirstAncestorOfClass("Model")
+			if model:FindFirstChild("Humanoid") then 
+
+				local part = Target
+				if part then
+					highlightPart.Parent = part.Parent
+				end
+
+				return
+			end
+		end
+
+		highlightPart.Parent = Folder
+	end
+	
+	game:GetService('RunService').RenderStepped:Connect(function()
+		update()
+	end)
+
+
+	local function onKeyPress(input)
+		if input.KeyCode == Enum.KeyCode[string.upper(Key)] then
+			local Target = mouse.Target
+			if Target and Target:FindFirstAncestorOfClass("Model") then
+				local model = Target:FindFirstAncestorOfClass("Model")
+				if model:FindFirstChild("Humanoid") then
+					ESPTarget(model.Name)
+				end
+			end
+		end
+	end
+	userInputService.InputBegan:Connect(onKeyPress)
+end
+
 --// Library Startup
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua"))()
 library.title = "KarpiWare V5 | Early-Access"
@@ -86,46 +136,19 @@ local Visuals = Init:NewTab("Visuals"); local VisualsSection = Visuals:NewSectio
 local Misc = Init:NewTab("Misc"); local MiscSection = Misc:NewSection("Misc")
 local Settings = Init:NewTab("Settings"); local SettingsSection = Settings:NewSection("Settings")
 
-
-
 --// Elements
-ClearTable(ScriptVariables.PlayerList)
-for _,v in pairs(players:GetChildren()) do
-    table.insert(ScriptVariables.PlayerList, v)
-end
-
-local PlayerList = Combat:NewSelector("Selector 1", "bungie", ScriptVariables.PlayerList, function(d)
-    ScriptVariables.CurrentTarget = d
-    ESPTarget(d)
-end)
-
-players.PlayerAdded:Connect(function ()
-    PlayerList:Remove()
-    ClearTable(ScriptVariables.PlayerList)
-    for _,v in pairs(players:GetChildren()) do
-        table.insert(ScriptVariables.PlayerList, v)
-    end
-    PlayerList = Combat:NewSelector("Selector 1", "bungie", ScriptVariables.PlayerList, function(d)
-        ScriptVariables.CurrentTarget = d
-        ESPTarget(d)
-    end)
-end)
-
-players.PlayerRemoving:Connect(function ()
-    PlayerList:Remove()
-    ClearTable(ScriptVariables.PlayerList)
-    for _,v in pairs(players:GetChildren()) do
-        table.insert(ScriptVariables.PlayerList, v)
-    end
-    PlayerList = Combat:NewSelector("Selector 1", "bungie", ScriptVariables.PlayerList, function(d)
-        ScriptVariables.CurrentTarget = d
-        ESPTarget(d)
+local SetTarget = Combat:NewKeybind("Set Target", Enum.KeyCode.Unknown, function(input)
+    mouse.KeyDown:Connect(function(Key)
+        if tostring(string.upper(Key)) == tostring(input) then
+            ScriptVariables.TargetSetKey = input
+           Start(ScriptVariables.TargetSetKey)
+        end
     end)
 end)
 
 local BlatantLock = Combat:NewKeybind("Blatant Lock", Enum.KeyCode.Unknown, function(input)
     mouse.KeyDown:Connect(function(Key)
-        if tostring(string.upper(Key)) == tostring(input) and ScriptVariables.BlatantLock then
+        if tostring(string.upper(Key)) == tostring(input) then
            
         end
     end)
