@@ -1,5 +1,5 @@
 --// Variables
-local Version = '41'
+local Version = '42'
 local HttpService = game:GetService("HttpService")
 local players = game:GetService("Players")
 local localPlayer = players.LocalPlayer
@@ -48,7 +48,7 @@ Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(input)
     local mouse = localPlayer:GetMouse()
     mouse.KeyDown:connect(function(Key)
         print('keydown for '.. string.upper(Key) .. ' Reacting to '.. input) 
-        if tostring(Key) == tostring(input) then
+        if tostring(string.upper(Key)) == tostring(input) then
             print('right key') 
             if mouse.Target then
                 ScriptVariables.OriginalPosition = hum.CFrame
