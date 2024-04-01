@@ -31,7 +31,8 @@ local Misc = Init:NewTab("Misc"); local MiscSection = Misc:NewSection("Misc")
 local Settings = Init:NewTab("Settings"); local SettingsSection = Settings:NewSection("Settings")
 
 --// Elements
-Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode, function(key)
+Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Z, function(key)
+    UpdatedKey = key
    if ScriptVariables.InvisKillEnabled then
         local PPname = "[Revolver]"
         local plr = plr1
@@ -40,7 +41,7 @@ Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode, function(key)
         local bp = plr.Backpack
         local mouse = plr:GetMouse()
         mouse.KeyDown:connect(function(press)
-            if press == key then
+            if press == UpdatedKey then
                 if mouse.Target then
                 ScriptVariables.OriginalPosition = hum.CFrame
                 hum.CFrame = CFrame.new(mouse.Hit.x, mouse.Hit.y + 5, mouse.Hit.z)
