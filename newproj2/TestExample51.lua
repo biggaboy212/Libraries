@@ -1,5 +1,5 @@
 --// Variables
-local Version = '5.50'
+local Version = '5.51'
 local HttpService = game:GetService("HttpService")
 local players = game:GetService("Players")
 local mouse = players.LocalPlayer:GetMouse()
@@ -39,7 +39,7 @@ local Settings = Init:NewTab("Settings"); local SettingsSection = Settings:NewSe
 --// Elements
 Combat:NewKeybind("InvisKill Keybind *Revolver Needed", Enum.KeyCode.Unknown, function(input)
     mouse.KeyDown:Connect(function(Key)
-        if tostring(string.upper(Key)) == tostring(input) then
+        if tostring(string.upper(Key)) == tostring(input) and ScriptVariables.InvisKillEnabled then
             if mouse.Target then
                 local localPlayer = players.LocalPlayer
                 local PPname = "[Revolver]"
