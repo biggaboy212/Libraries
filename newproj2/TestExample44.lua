@@ -1,7 +1,8 @@
 --// Variables
-local Version = '43'
+local Version = '44'
 local HttpService = game:GetService("HttpService")
 local players = game:GetService("Players")
+local mouse = players.LocalPlayer:GetMouse()
 
 print('Version'..Version)
 
