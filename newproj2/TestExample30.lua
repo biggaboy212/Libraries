@@ -43,6 +43,7 @@ Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(key)
     local char = localPlayer.Character
     local hum = char:FindFirstChildOfClass("HumanoidRootPart")
     local bp = backpack
+    local mouse = localPlayer:GetMouse()
     UIS.InputBegan:Connect(function(Input, GameProcessedEvent)
         print('input began')
         if Input.KeyCode == key then
