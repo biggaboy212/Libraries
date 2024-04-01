@@ -1,5 +1,5 @@
 --// Variables
-local Version = '38'
+local Version = '39'
 local HttpService = game:GetService("HttpService")
 local players = game:GetService("Players")
 local localPlayer = players.LocalPlayer
