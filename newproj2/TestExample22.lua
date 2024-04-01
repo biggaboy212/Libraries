@@ -32,6 +32,7 @@ local Settings = Init:NewTab("Settings"); local SettingsSection = Settings:NewSe
 
 --// Elements
 Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(key)
+    print(key)
     print('pre-key')
    if ScriptVariables.InvisKillEnabled then
     print('start')
@@ -42,6 +43,7 @@ Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(key)
         local bp = plr.Backpack
         local mouse = plr:GetMouse()
         mouse.KeyDown:connect(function(press)
+            print('semi mid')
             if press == key then
                 print('mid')
                 if mouse.Target then
