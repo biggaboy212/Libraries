@@ -22,7 +22,7 @@ local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/bigga
 library.title = "KarpiWare V5 | Early-Access"
 
 local Notif = library:InitNotifications()
-Notif:Notify("Loading", 3, "information")
+Notif:Notify("Loading | Version ".. Version, 3, "information")
 
 library:Introduction()
 --
