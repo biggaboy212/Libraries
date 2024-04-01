@@ -31,30 +31,29 @@ local Misc = Init:NewTab("Misc"); local MiscSection = Misc:NewSection("Misc")
 local Settings = Init:NewTab("Settings"); local SettingsSection = Settings:NewSection("Settings")
 
 --// Elements
-Combat:NewKeybind("InvisKill Keybind", nil, function(key)
+Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode, function(key)
    if ScriptVariables.InvisKillEnabled then
         local PPname = "[Revolver]"
-    
         local plr = plr1
         local char = plr.Character
         local hum = char.HumanoidRootPart
         local bp = plr.Backpack
         local mouse = plr:GetMouse()
-        mouse.KeyDown:connect(function(key)
-        if key == key then
-        if mouse.Target then
-        ScriptVariables.OriginalPosition = hum.CFrame
-        hum.CFrame = CFrame.new(mouse.Hit.x, mouse.Hit.y + 5, mouse.Hit.z)
-            local revolver = bp[PPname] or char[PPname]
-            local PPlocation = character:WaitForChild(PPname) or bp:WaitForChild('PPname')
-                revolver.Parent = character
-                PPlocation:Activate()
+        mouse.KeyDown:connect(function(press)
+            if press == key then
+                if mouse.Target then
+                ScriptVariables.OriginalPosition = hum.CFrame
+                hum.CFrame = CFrame.new(mouse.Hit.x, mouse.Hit.y + 5, mouse.Hit.z)
+                    local revolver = bp[PPname] or char[PPname]
+                    local PPlocation = char:WaitForChild(PPname) or bp:WaitForChild(PPname)
+                        revolver.Parent = char
+                        PPlocation:Activate()
 
-                character.Humanoid:UnequipTools()
-                
-                hum.CFrame = CFrame.new(ScriptVariables.OriginalPosition)
-        end
-        end
+                        character.Humanoid:UnequipTools()
+                        
+                        hum.CFrame = CFrame.new(ScriptVariables.OriginalPosition)
+                end
+            end
         end)
    end
 end)
