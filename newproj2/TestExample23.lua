@@ -49,7 +49,7 @@ Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(key)
         print('5')
         local mouse = plr:GetMouse()
         print('6')
-        mouse.KeyDown:connect(function(press)
+        mouse.KeyDown:Connect(function(press)
             print('7')
             print('semi mid')
             if press == key then
