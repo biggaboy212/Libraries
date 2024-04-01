@@ -36,13 +36,21 @@ Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(key)
     print('pre-key')
    if ScriptVariables.InvisKillEnabled then
     print('start')
+    print('1')
         local PPname = "[Revolver]"
+        print('1')
         local plr = plr1
+        print('2')
         local char = plr.Character
+        print('3')
         local hum = char.HumanoidRootPart
+        print('4')
         local bp = plr.Backpack
+        print('5')
         local mouse = plr:GetMouse()
+        print('6')
         mouse.KeyDown:connect(function(press)
+            print('7')
             print('semi mid')
             if press == key then
                 print('mid')
