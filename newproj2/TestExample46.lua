@@ -1,5 +1,5 @@
 --// Variables
-local Version = '45'
+local Version = '46'
 local HttpService = game:GetService("HttpService")
 local players = game:GetService("Players")
 local mouse = players.LocalPlayer:GetMouse()
@@ -51,8 +51,8 @@ Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(input)
                 ScriptVariables.OriginalPosition = hum.CFrame
                 hum.CFrame = CFrame.new(mouse.Hit.x, mouse.Hit.y, mouse.Hit.z)
                 
-                local revolver = bp[PPname] or char[PPname]
-                local PPlocation = char:WaitForChild(PPname) or bp:WaitForChild(PPname)
+                local revolver = bp:FindFirstChild(PPname) or char:FindFirstChild(PPname)
+                local PPlocation = char:WaitForChild(PPname)
                 revolver.Parent = char
                 PPlocation:Activate()
 
