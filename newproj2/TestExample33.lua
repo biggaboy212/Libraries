@@ -1,5 +1,5 @@
 --// Variables
-local Version = '32'
+local Version = '33'
 local HttpService = game:GetService("HttpService")
 local players = game:GetService("Players")
 local localPlayer = players.LocalPlayer
@@ -47,7 +47,7 @@ Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(key)
     local bp = backpack
     local mouse = localPlayer:GetMouse()
     UIS.InputBegan:Connect(function(Input, GameProcessedEvent)
-        print('input began')
+        print('input began: '.. Input ..' | KB Input: '.. key)
         if Input.KeyCode == key then
             print('right key') 
             if mouse.Target then
