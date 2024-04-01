@@ -1,5 +1,5 @@
 --// Variables
-local Version = '48'
+local Version = '49'
 local HttpService = game:GetService("HttpService")
 local players = game:GetService("Players")
 local mouse = players.LocalPlayer:GetMouse()
@@ -59,6 +59,7 @@ Combat:NewKeybind("InvisKill Keybind *Revolver Needed", Enum.KeyCode.Unknown, fu
                 char.Humanoid:UnequipTools()
                             
                 hum.CFrame = ScriptVariables.OriginalPosition
+                task.wait()
                 print('end')
             end
         end
