@@ -1,5 +1,5 @@
 --// Variables
-local Version = '5.52'
+local Version = '5.53'
 local HttpService = game:GetService("HttpService")
 local runService = game:GetService("RunService");
 local players = game:GetService("Players")
@@ -89,7 +89,7 @@ end)
 
 players.PlayerAdded:Connect(function ()
     PlayerList:Remove()
-    PlayerList = Combat:NewSelector("Selector 1", "bungie", {players:GetChildren()}, function(d)
+    PlayerList = Combat:NewSelector("Selector 1", "bungie", players:GetChildren(), function(d)
         ScriptVariables.CurrentTarget = d
         ESPTarget(d)
     end)
