@@ -1,5 +1,5 @@
 --// Variables
-local Version = '44'
+local Version = '45'
 local HttpService = game:GetService("HttpService")
 local players = game:GetService("Players")
 local mouse = players.LocalPlayer:GetMouse()
@@ -38,15 +38,13 @@ local Settings = Init:NewTab("Settings"); local SettingsSection = Settings:NewSe
 
 --// Elements
 Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(input)
-    mouse.KeyDown:connect(function(Key)
+    mouse.KeyDown:Connect(function(Key)
         if tostring(string.upper(Key)) == tostring(input) then
             if mouse.Target then
                 local localPlayer = players.LocalPlayer
                 local PPname = "[Revolver]"
                 local char = localPlayer.Character
-                if not char then return end -- Check if the character exists
-                local hum = char:FindFirstChildOfClass("HumanoidRootPart")
-                if not hum then return end -- Check if the humanoid root part exists
+                local hum = char:FindFirstChild("HumanoidRootPart")
                 local bp = localPlayer.Backpack or localPlayer.Character
                 local mouse = localPlayer:GetMouse()
 
