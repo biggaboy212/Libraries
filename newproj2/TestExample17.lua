@@ -31,7 +31,7 @@ local Misc = Init:NewTab("Misc"); local MiscSection = Misc:NewSection("Misc")
 local Settings = Init:NewTab("Settings"); local SettingsSection = Settings:NewSection("Settings")
 
 --// Elements
-Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Z, function(key)
+Combat:NewKeybind("InvisKill Keybind", nil, function(key)
    if ScriptVariables.InvisKillEnabled then
         local PPname = "[Revolver]"
     
@@ -46,7 +46,7 @@ Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Z, function(key)
         ScriptVariables.OriginalPosition = hum.CFrame
         hum.CFrame = CFrame.new(mouse.Hit.x, mouse.Hit.y + 5, mouse.Hit.z)
             local revolver = bp[PPname] or char[PPname]
-            local PPlocation = character:WaitForChild(PPname)
+            local PPlocation = character:WaitForChild(PPname) or bp:WaitForChild('PPname')
                 revolver.Parent = character
                 PPlocation:Activate()
 
