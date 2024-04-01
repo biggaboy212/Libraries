@@ -1,5 +1,5 @@
 --// Variables
-local Version = '39'
+local Version = '40'
 local HttpService = game:GetService("HttpService")
 local players = game:GetService("Players")
 local localPlayer = players.LocalPlayer
@@ -39,29 +39,29 @@ local Settings = Init:NewTab("Settings"); local SettingsSection = Settings:NewSe
 
 
 --// Elements
-Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(key)
-    print(key)
+Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(input)
+    print(input)
     local PPname = "[Revolver]"
     local char = localPlayer.Character
     local hum = char:FindFirstChildOfClass("HumanoidRootPart")
     local bp = backpack
     local mouse = localPlayer:GetMouse()
     mouse.KeyDown:connect(function(Key)
-        print('key') 
-        if Key == key then
+        print('keydown for '.. Key .. ' Reacting to '.. input) 
+        if tostring(Key) == tostring(input) then
             print('right key') 
             if mouse.Target then
-            ScriptVariables.OriginalPosition = hum.CFrame
-            hum.CFrame = CFrame.new(mouse.Hit.x, mouse.Hit.y + 5, mouse.Hit.z)
+                ScriptVariables.OriginalPosition = hum.CFrame
+                hum.CFrame = CFrame.new(mouse.Hit.x, mouse.Hit.y, mouse.Hit.z)
                 local revolver = bp[PPname] or char[PPname]
                 local PPlocation = char:WaitForChild(PPname) or bp:WaitForChild(PPname)
-                    revolver.Parent = char
-                    PPlocation:Activate()
+                revolver.Parent = char
+                PPlocation:Activate()
 
-                    character.Humanoid:UnequipTools()
-                        
-                    hum.CFrame = CFrame.new(ScriptVariables.OriginalPosition)
-                    print('end')
+                character.Humanoid:UnequipTools()
+                            
+                hum.CFrame = CFrame.new(ScriptVariables.OriginalPosition)
+                print('end')
             end
         end
     end)
