@@ -1,10 +1,12 @@
 --// Variables
+local Version = '31'
 local HttpService = game:GetService("HttpService")
 local players = game:GetService("Players")
 local localPlayer = players.LocalPlayer
 local character = localPlayer.Character
 local humanoid = character:FindFirstChildOfClass("Humanoid")
 local backpack = localPlayer.Backpack or localPlayer.Character
+print('Version'..Version)
 
 local UserInputService = game:GetService("UserInputService")
 
