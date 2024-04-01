@@ -1,5 +1,5 @@
 --// Variables
-local Version = '5.54'
+local Version = '5.57'
 local HttpService = game:GetService("HttpService")
 local runService = game:GetService("RunService");
 local players = game:GetService("Players")
@@ -12,10 +12,17 @@ local UIS = game:GetService("UserInputService")
 local ScriptVariables = {
     CurrentTarget = nil,
     BlatantLock = nil,
-    DynamicColour = nil
+    DynamicColour = nil,
+    PlayerList = {},
 }
 
 --// Functions
+local function ClearTable(tbl)
+    for key in pairs(tbl) do
+        tbl[key] = nil
+    end
+end
+
 function ESPTarget(arg1)
     local FillColor = Color3.fromRGB(145, 0, 255)
     local DepthMode = "AlwaysOnTop"
@@ -82,21 +89,35 @@ local Settings = Init:NewTab("Settings"); local SettingsSection = Settings:NewSe
 
 
 --// Elements
-local PlayerList = Combat:NewSelector("Selector 1", "bungie", players:GetChildren(), function(d)
+ClearTable(ScriptVariables.PlayerList)
+for _,v in pairs(players:GetChildren()) do
+    table.insert(ScriptVariables.PlayerList, v)
+end
+
+local PlayerList = Combat:NewSelector("Selector 1", "bungie", ScriptVariables.PlayerList, function(d)
     ScriptVariables.CurrentTarget = d
     ESPTarget(d)
 end)
 
 players.PlayerAdded:Connect(function ()
     PlayerList:Remove()
-    PlayerList = Combat:NewSelector("Selector 1", "bungie", players:GetChildren(), function(d)
+    ClearTable(ScriptVariables.PlayerList)
+    for _,v in pairs(players:GetChildren()) do
+        table.insert(ScriptVariables.PlayerList, v)
+    end
+    PlayerList = Combat:NewSelector("Selector 1", "bungie", ScriptVariables.PlayerList, function(d)
         ScriptVariables.CurrentTarget = d
         ESPTarget(d)
     end)
 end)
+
 players.PlayerRemoving:Connect(function ()
     PlayerList:Remove()
-    PlayerList = Combat:NewSelector("Selector 1", "bungie", players:GetChildren(), function(d)
+    ClearTable(ScriptVariables.PlayerList)
+    for _,v in pairs(players:GetChildren()) do
+        table.insert(ScriptVariables.PlayerList, v)
+    end
+    PlayerList = Combat:NewSelector("Selector 1", "bungie", ScriptVariables.PlayerList, function(d)
         ScriptVariables.CurrentTarget = d
         ESPTarget(d)
     end)
