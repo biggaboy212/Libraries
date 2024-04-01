@@ -32,7 +32,9 @@ local Settings = Init:NewTab("Settings"); local SettingsSection = Settings:NewSe
 
 --// Elements
 Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(key)
+    print('pre-key')
    if ScriptVariables.InvisKillEnabled then
+    print('start')
         local PPname = "[Revolver]"
         local plr = plr1
         local char = plr.Character
@@ -41,6 +43,7 @@ Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(key)
         local mouse = plr:GetMouse()
         mouse.KeyDown:connect(function(press)
             if press == key then
+                print('mid')
                 if mouse.Target then
                 ScriptVariables.OriginalPosition = hum.CFrame
                 hum.CFrame = CFrame.new(mouse.Hit.x, mouse.Hit.y + 5, mouse.Hit.z)
@@ -52,6 +55,7 @@ Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(key)
                         character.Humanoid:UnequipTools()
                         
                         hum.CFrame = CFrame.new(ScriptVariables.OriginalPosition)
+                        print('end')
                 end
             end
         end)
