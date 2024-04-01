@@ -1,5 +1,5 @@
 --// Variables
-local Version = '47'
+local Version = '48'
 local HttpService = game:GetService("HttpService")
 local players = game:GetService("Players")
 local mouse = players.LocalPlayer:GetMouse()
@@ -37,7 +37,7 @@ local Settings = Init:NewTab("Settings"); local SettingsSection = Settings:NewSe
 
 
 --// Elements
-Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(input)
+Combat:NewKeybind("InvisKill Keybind *Revolver Needed", Enum.KeyCode.Unknown, function(input)
     mouse.KeyDown:Connect(function(Key)
         if tostring(string.upper(Key)) == tostring(input) then
             if mouse.Target then
@@ -58,7 +58,7 @@ Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(input)
 
                 char.Humanoid:UnequipTools()
                             
-                hum.CFrame = CFrame.new(ScriptVariables.OriginalPosition)
+                hum.CFrame = ScriptVariables.OriginalPosition
                 print('end')
             end
         end
