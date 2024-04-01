@@ -13,6 +13,8 @@ local ScriptVariables = {
     OriginalPosition = nil
 }
 
+--// Functions
+
 --// Library Startup
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua"))()
 library.title = "KarpiWare V5 | Early-Access"
@@ -21,9 +23,10 @@ local Notif = library:InitNotifications()
 Notif:Notify("Loading", 3, "information")
 
 library:Introduction()
+--
 task.wait(1)
 local Init = library:Init()
-
+--
 -- Tabs
 local Combat = Init:NewTab("Combat"); local CombatSection = Combat:NewSection("Main")
 local Movement = Init:NewTab("Movement"); local MovementSection = Movement:NewSection("Movement")
@@ -31,37 +34,40 @@ local Visuals = Init:NewTab("Visuals"); local VisualsSection = Visuals:NewSectio
 local Misc = Init:NewTab("Misc"); local MiscSection = Misc:NewSection("Misc")
 local Settings = Init:NewTab("Settings"); local SettingsSection = Settings:NewSection("Settings")
 
+
+
 --// Elements
-local function InvisKillLogic(key)
+Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(key)
+    print(key)
     local PPname = "[Revolver]"
     local char = localPlayer.Character
     local hum = char:FindFirstChildOfClass("HumanoidRootPart")
     local bp = backpack
-
-    UserInputService.InputBegan:Connect(function(input, processed)
-        if not processed and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == key and ScriptVariables.InvisKillEnabled then
-            if char and hum and bp then
-                ScriptVariables.OriginalPosition = hum.CFrame
-                hum.CFrame = CFrame.new(mouse.Hit.x, mouse.Hit.y + 5, mouse.Hit.z)
+    local mouse = plr:GetMouse()
+    UIS.InputBegan:Connect(function(Input, GameProcessedEvent)
+        print('input began')
+        if Input.KeyCode == key then
+            print('right key') 
+            if mouse.Target then
+            ScriptVariables.OriginalPosition = hum.CFrame
+            hum.CFrame = CFrame.new(mouse.Hit.x, mouse.Hit.y + 5, mouse.Hit.z)
                 local revolver = bp[PPname] or char[PPname]
                 local PPlocation = char:WaitForChild(PPname) or bp:WaitForChild(PPname)
-                revolver.Parent = char
-                PPlocation:Activate()
-                character.Humanoid:UnequipTools()
-                hum.CFrame = CFrame.new(ScriptVariables.OriginalPosition)
+                    revolver.Parent = char
+                    PPlocation:Activate()
+
+                    character.Humanoid:UnequipTools()
+                        
+                    hum.CFrame = CFrame.new(ScriptVariables.OriginalPosition)
+                    print('end')
             end
         end
     end)
-end
-
-Combat:NewKeybind("InvisKill Keybind", Enum.KeyCode.Unknown, function(key)
-    InvisKillLogic(key)
 end)
 
 Combat:NewToggle("InvisKill V2", false, function(value)
-    ScriptVariables.InvisKillEnabled = value
+ScriptVariables.InvisKillEnabled = value
 end)
-
 
 
 --[[
