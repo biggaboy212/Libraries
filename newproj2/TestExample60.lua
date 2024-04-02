@@ -1,5 +1,14 @@
 --// Variables
-local Version = '5.59'
+
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua"))()
+library.title = "KarpiWare V5 | Early-Access"
+
+local Notif = library:InitNotifications()
+Notif:Notify("Loading | Version ".. Version, 3, "information")
+
+library:Introduction()
+
+local Version = '5.60'
 local HttpService = game:GetService("HttpService")
 local runService = game:GetService("RunService");
 local players = game:GetService("Players")
@@ -21,6 +30,7 @@ function ESPTarget(arg1)
     for _, element in pairs(game:GetService('CoreGui'):GetChildren()) do
         if string.find(element.Name, 'EspHL') then
             element:Destroy()
+            return
         end
     end
     
@@ -45,7 +55,7 @@ function ESPTarget(arg1)
         end
 
         function Update()
-        if not players:FindFirstChild(arg1) then
+        if not players:FindFirstChild(arg1) or ScriptVariables.CurrentTarget == nil then
             Highlight:Destroy()
         end
         if ScriptVariables.DynamicColour == true or nil then
@@ -61,15 +71,26 @@ end)
 Highlight(arg1)
 end
 
-function Start(key)
-	local Folder = Instance.new('Folder')
-	Folder.Parent = workspace
-	local Highlight = Instance.new("Highlight")
-	Highlight.FillColor = Color3.fromRGB(255, 255, 255)
-	Highlight.FillTransparency = 0.6
-	Highlight.Parent = Folder
+function Start()
+    local partname = game:GetService('HttpService'):GenerateGUID()
 
-	local Key = key
+    local Folder = Instance.new('Folder')
+    Folder.Parent = workspace
+    
+    local Highlight = Instance.new("Highlight")
+    Highlight.FillColor = Color3.fromRGB(255, 255, 255)
+    Highlight.FillTransparency = 0.6
+    Highlight.Parent = Folder
+    
+    local Part = Instance.new("Part")
+    Part.BottomSurface = Enum.SurfaceType.Smooth
+    Part.TopSurface = Enum.SurfaceType.Smooth
+    Part.Color = Color3.fromRGB(255, 255, 0)
+    Part.Material = Enum.Material.ForceField
+    Part.Size = Vector3.new(0.5, 0.5, 0.5)
+    Part.CFrame = CFrame.new(-2.57000732421875, 0.25, -8.45001220703125)
+    Part.Shape = Enum.PartType.Ball
+    Part.Anchored = true
 
 	local plrs = game:GetService('Players')
 	local hrp = plrs.LocalPlayer.Character:FindFirstChild('HumanoidRootPart')
@@ -81,22 +102,30 @@ function Start(key)
 	local userInputService = game:GetService('UserInputService')
 
 	local function update()
-		local Target = mouse.Target
-		if Target and Target:FindFirstAncestorOfClass("Model") then
-			local model = Target:FindFirstAncestorOfClass("Model")
-			if model:FindFirstChild("Humanoid") then 
-
-				local part = Target
-				if part then
-					highlightPart.Parent = part.Parent
-				end
-
-				return
-			end
-		end
-
-		highlightPart.Parent = Folder
-	end
+        local Target = mouse.Target
+        if Folder:FindFirstChild(partname) then
+            Folder[partname]:Destroy()
+        end
+        local new = Part:Clone()
+        mouse.TargetFilter = new
+        new.CFrame = CFrame.new(mouse.Hit.X, mouse.Hit.Y, mouse.Hit.Z)
+        new.Parent = Folder
+        new.Name = partname
+        if Target and Target:FindFirstAncestorOfClass("Model") then
+            local model = Target:FindFirstAncestorOfClass("Model")
+            if model:FindFirstChild("Humanoid") then 
+                new.Color = Color3.fromRGB(0, 255, 0)
+                local part = Target
+                if part then
+                    highlightPart.Parent = part.Parent
+                end
+    
+                return
+            end
+        end
+    
+        highlightPart.Parent = Folder
+    end
 	
 	game:GetService('RunService').RenderStepped:Connect(function()
 		update()
@@ -104,12 +133,20 @@ function Start(key)
 
 
 	local function onKeyPress(input)
-		if input.KeyCode == Enum.KeyCode[string.upper(Key)] then
+		if input.KeyCode == Enum.KeyCode[string.upper(ScriptVariables.TargetSetKey)] then
 			local Target = mouse.Target
 			if Target and Target:FindFirstAncestorOfClass("Model") then
 				local model = Target:FindFirstAncestorOfClass("Model")
 				if model:FindFirstChild("Humanoid") then
 					ESPTarget(model.Name)
+                    if ScriptVariables.CurrentTarget == model.Name then
+                        Notif:Notify("Unset Target", 3, "information")
+                        ScriptVariables.CurrentTarget = nil
+                    else
+                        ScriptVariables.CurrentTarget = model.Name
+                    end
+
+                    Notif:Notify("Target Set: ".. ScriptVariables.CurrentTarget, 3, "information")
 				end
 			end
 		end
@@ -117,15 +154,21 @@ function Start(key)
 	userInputService.InputBegan:Connect(onKeyPress)
 end
 
+    game:GetService('RunService').RenderStepped:Connect(function()
+        if ScriptVariables.BlatantLock == true then
+            local Camera = workspace.CurrentCamera
+            local Lookat1 = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget)
+            local LookAt = Lookat1.Character:FindFirstChild('HumanoidRootPart')
+
+            local offset = Vector3.new(0, LookAt.Size.Y / 2, 3)
+            Camera.CameraType = Enum.CameraType.Scriptable
+            
+            local partPos = LookAt.Position
+            Camera.CFrame = CFrame.lookAt(partPos + offset, partPos)
+        end
+    end)
+
 --// Library Startup
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua"))()
-library.title = "KarpiWare V5 | Early-Access"
-
-local Notif = library:InitNotifications()
-Notif:Notify("Loading | Version ".. Version, 3, "information")
-
-library:Introduction()
---
 task.wait(1)
 local Init = library:Init()
 --
@@ -141,15 +184,26 @@ local SetTarget = Combat:NewKeybind("Set Target", Enum.KeyCode.Unknown, function
     mouse.KeyDown:Connect(function(Key)
         if tostring(string.upper(Key)) == tostring(input) then
             ScriptVariables.TargetSetKey = input
-           Start(ScriptVariables.TargetSetKey)
+           Start()
         end
     end)
 end)
 
-local BlatantLock = Combat:NewKeybind("Blatant Lock", Enum.KeyCode.Unknown, function(input)
+local BlatantLock = Combat:NewKeybind("Lock (FP / SHIFTLOCK)", Enum.KeyCode.Unknown, function(input)
     mouse.KeyDown:Connect(function(Key)
         if tostring(string.upper(Key)) == tostring(input) then
-           
+           local State = false
+           if ScriptVariables.CurrentTarget ~= nil then
+                if State == false or nil then 
+                        State = true
+                        ScriptVariables.BlatantLock = true
+                elseif State == true then
+                        State = false
+                        ScriptVariables.BlatantLock = false
+                end
+            else
+                Notif:Notify("No target set", 3, "information")
+            end
         end
     end)
 end)
