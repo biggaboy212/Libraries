@@ -1,6 +1,6 @@
 --// Variables
 
-local Version = '5.66'
+local Version = '5.67'
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua"))()
 library.title = "KarpiWare V5 | Early-Access"
 
@@ -177,18 +177,6 @@ game:GetService('RunService').RenderStepped:Connect(function()
                 CurrentCamera.CameraType = Enum.CameraType.Scriptable
                 CurrentCamera.CFrame = CFrame.lookAt(CurrentRootPart.Position + Offset, TargetPosition)
             end
-        end
-    elseif ScriptVariables.BlatantLock == false or ScriptVariables.CurrentTarget == nil then
-        local CurrentPlayer = game.Players.LocalPlayer
-        local CurrentRootPart = CurrentPlayer.Character and CurrentPlayer.Character:FindFirstChild("HumanoidRootPart")
-
-        if CurrentRootPart then
-            local CurrentCamera = workspace.CurrentCamera
-            local Offset = Vector3.new(0, CurrentRootPart.Size.Y / 2, 3)
-            local TargetPosition = CurrentRootPart.Position
-
-            CurrentCamera.CameraType = Enum.CameraType.Scriptable
-            CurrentCamera.CFrame = CFrame.lookAt(TargetPosition + Offset, TargetPosition)
         end
     end
 end)
