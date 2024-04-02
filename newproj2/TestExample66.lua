@@ -1,6 +1,6 @@
 --// Variables
 
-local Version = '5.65'
+local Version = '5.66'
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua"))()
 library.title = "KarpiWare V5 | Early-Access"
 
@@ -23,6 +23,7 @@ local ScriptVariables = {
     BlatantLock = nil,
     DynamicColour = true,
     TargetSetKey = nil,
+    KeybindState1 = false,
 }
 
 --// Functions
@@ -159,8 +160,6 @@ end
 
 Start()
 
-local OriginalCameraCFrame = workspace.CurrentCamera.CFrame
-
 game:GetService('RunService').RenderStepped:Connect(function()
     if ScriptVariables.BlatantLock == true then
         local CurrentPlayer = game.Players.LocalPlayer
@@ -179,7 +178,7 @@ game:GetService('RunService').RenderStepped:Connect(function()
                 CurrentCamera.CFrame = CFrame.lookAt(CurrentRootPart.Position + Offset, TargetPosition)
             end
         end
-    elseif ScriptVariables.BlatantLock == false then
+    elseif ScriptVariables.BlatantLock == false or ScriptVariables.CurrentTarget == nil then
         local CurrentPlayer = game.Players.LocalPlayer
         local CurrentRootPart = CurrentPlayer.Character and CurrentPlayer.Character:FindFirstChild("HumanoidRootPart")
 
@@ -218,13 +217,12 @@ end)
 local BlatantLock = Combat:NewKeybind("Lock (FP / SHIFTLOCK)", Enum.KeyCode.Unknown, function(input)
     mouse.KeyDown:Connect(function(Key)
         if tostring(string.upper(Key)) == tostring(input) then
-           local State = false
            if ScriptVariables.CurrentTarget ~= nil then
-                if State == false or nil then 
-                        State = true
+                if ScriptVariables.KeybindState1 == false or nil then 
+                        ScriptVariables.KeybindState1  = true
                         ScriptVariables.BlatantLock = true
-                elseif State == true then
-                        State = false
+                elseif ScriptVariables.KeybindState1 == true then
+                        ScriptVariables.KeybindState1 = false
                         ScriptVariables.BlatantLock = false
                 end
             else
