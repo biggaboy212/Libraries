@@ -1,5 +1,5 @@
 --// Variables
-local Version = 5.77
+local Version = 5.78
 local library =
     loadstring(
     game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua")
@@ -272,6 +272,8 @@ end
 
 UserInputService.InputBegan:Connect(
     function(input, isProcessed)
+        print(Enum.KeyCode[tostring(ScriptVariables.TargetSetKey)])
+        print(Enum.KeyCode.Z)
         if not isProcessed and input.KeyCode == Enum.KeyCode[ScriptVariables.TargetSetKey] then
             SetClosest()
         end
