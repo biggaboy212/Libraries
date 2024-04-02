@@ -1,6 +1,6 @@
 --// Variables
 
-local Version = '5.69'
+local Version = '5.70'
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua"))()
 library.title = "KarpiWare V5 | Early-Access"
 
@@ -23,7 +23,7 @@ local ScriptVariables = {
     BlatantLock = nil,
     DynamicColour = true,
     TargetSetKey = nil,
-    KeybindState1 = false,
+    Prediction = 0.150
 }
 
 --// Functions
@@ -160,30 +160,30 @@ end
 
 Start()
 
-local a = workspace.CurrentCamera.CameraType
-local b = workspace.CurrentCamera.CFrame
-
 game:GetService('RunService').RenderStepped:Connect(function()
-    if ScriptVariables.BlatantLock == true then
-        local CurrentPlayer = game.Players.LocalPlayer
-        local TargetPlayer = game.Players:FindFirstChild(ScriptVariables.CurrentTarget)
+if ScriptVariables.BlatantLock == true then
+    local Module = loadstring(game:HttpGet("https://raw.githubusercontent.com/RapperDeluxe/scripts/main/silent%20aim%20module"))()
+    Module.TeamCheck(false)
+    local Workspace = game:GetService("Workspace")
+    local Players = game:GetService("Players")
 
-        if CurrentPlayer and TargetPlayer then
-            local CurrentRootPart = CurrentPlayer.Character and CurrentPlayer.Character:FindFirstChild("HumanoidRootPart")
-            local TargetRootPart = TargetPlayer.Character and TargetPlayer.Character:FindFirstChild("HumanoidRootPart")
+    function NotDown()
+        local Character = Players.LocalPlayer.Character
 
-            if CurrentRootPart and TargetRootPart then
-                local CurrentCamera = workspace.CurrentCamera
-                local Offset = Vector3.new(0, TargetRootPart.Size.Y / 2, 3)
-                local TargetPosition = TargetRootPart.Position
-
-                CurrentCamera.CameraType = Enum.CameraType.Scriptable
-                CurrentCamera.CFrame = CFrame.lookAt(CurrentRootPart.Position + Offset, TargetPosition)
-            end
-    elseif ScriptVariables.BlatantLock == false or ScriptVariables.CurrentTarget == nil then
-        workspace.CurrentCamera.CameraType = a
-        workspace.CurrentCamera.CFrame = b
+        if (Character:WaitForChild("BodyEffects")["K.O"].Value or Character:FindFirstChild("GRABBING_CONSTRAINT") ~= nil) then
+            return false
         end
+        return true
+    end
+
+        if NotDown() then
+            local SelectedPart = Module.SelectedPart
+            local Hit = SelectedPart.CFrame + (SelectedPart.Velocity * ScriptVariables.Prediction)
+
+            Workspace.CurrentCamera.CFrame = CFrame.lookAt(Workspace.CurrentCamera.CFrame.Position, Hit.Position)
+        end
+    elseif ScriptVariables.BlatantLock == false or ScriptVariables.CurrentTarget == nil then
+       -- blank for now
     end
 end)
 
@@ -201,32 +201,18 @@ local Settings = Init:NewTab("Settings"); local SettingsSection = Settings:NewSe
 
 --// Elements
 local SetTarget = Combat:NewKeybind("Set Target", Enum.KeyCode.Unknown, function(input)
-    mouse.KeyDown:Connect(function(Key)
-        if tostring(string.upper(Key)) == tostring(input) then
-            ScriptVariables.TargetSetKey = input
-        end
-    end)
+    ScriptVariables.TargetSetKey = input
 end)
 
-local BlatantLock = Combat:NewKeybind("Lock (FP / SHIFTLOCK)", Enum.KeyCode.Unknown, function(input)
-    mouse.KeyDown:Connect(function(Key)
-        if tostring(string.upper(Key)) == tostring(input) then
-           if ScriptVariables.CurrentTarget ~= nil then
-                if ScriptVariables.KeybindState1 == false or nil then 
-                        ScriptVariables.KeybindState1  = true
-                        ScriptVariables.BlatantLock = true
-                        Notif:Notify("Enabled Lock", 3, "information")
-                elseif ScriptVariables.KeybindState1 == true then
-                        ScriptVariables.KeybindState1 = false
-                        ScriptVariables.BlatantLock = false
-                        Notif:Notify("Disabled Lock", 3, "information")
-                end
-            else
-                Notif:Notify("No target set", 3, "information")
-            end
-        end
-    end)
-end)
+local BlatantLock = Combat:NewToggle("Lock [Target]", false, function(value)
+    if value then
+        ScriptVariables.BlatantLock = true
+        Notif:Notify("Enabled Lock", 3, "information")
+    else
+        ScriptVariables.BlatantLock = false
+        Notif:Notify("Disabled Lock", 3, "information")
+    end
+end):AddKeybind(Enum.KeyCode.Unknown)
 
 
 --[[
