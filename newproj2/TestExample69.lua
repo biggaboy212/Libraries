@@ -1,6 +1,6 @@
 --// Variables
 
-local Version = '5.68'
+local Version = '5.69'
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua"))()
 library.title = "KarpiWare V5 | Early-Access"
 
@@ -180,7 +180,6 @@ game:GetService('RunService').RenderStepped:Connect(function()
                 CurrentCamera.CameraType = Enum.CameraType.Scriptable
                 CurrentCamera.CFrame = CFrame.lookAt(CurrentRootPart.Position + Offset, TargetPosition)
             end
-        end
     elseif ScriptVariables.BlatantLock == false or ScriptVariables.CurrentTarget == nil then
         workspace.CurrentCamera.CameraType = a
         workspace.CurrentCamera.CFrame = b
