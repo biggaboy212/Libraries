@@ -1,5 +1,5 @@
 --// Variables
-local Version = '5.58'
+local Version = '5.59'
 local HttpService = game:GetService("HttpService")
 local runService = game:GetService("RunService");
 local players = game:GetService("Players")
@@ -12,21 +12,27 @@ local UIS = game:GetService("UserInputService")
 local ScriptVariables = {
     CurrentTarget = nil,
     BlatantLock = nil,
-    DynamicColour = nil,
-    TargetSetKey = nil
+    DynamicColour = true,
+    TargetSetKey = nil,
 }
 
 --// Functions
 function ESPTarget(arg1)
+    for _, element in pairs(game:GetService('CoreGui'):GetChildren()) do
+        if string.find(element.Name, 'EspHL') then
+            element:Destroy()
+        end
+    end
+    
     local FillColor = Color3.fromRGB(145, 0, 255)
     local DepthMode = "AlwaysOnTop"
-    local FillTransparency = 0.5
+    local FillTransparency = 0.8
     local OutlineColor = Color3.fromRGB(255,255,255)
     local OutlineTransparency = 0
 
     local function Highlight(plr)
         local Highlight = Instance.new("Highlight")
-        Highlight.Name = HttpService:GenerateGUID()
+        Highlight.Name = "EspHL" .. HttpService:GenerateGUID()
         Highlight.FillColor = FillColor
         Highlight.DepthMode = DepthMode
         Highlight.FillTransparency = FillTransparency
@@ -43,14 +49,8 @@ function ESPTarget(arg1)
             Highlight:Destroy()
         end
         if ScriptVariables.DynamicColour == true or nil then
-            FillColor = Color3.new(1, 0, 0):Lerp(Color3.new(0, 1, 0), players:FindFirstChild(arg1).Character.Humanoid.Health / players:FindFirstChild(arg1).Character.Humanoid.MaxHealth)
+            Highlight.FillColor = Color3.new(1, 0, 0):Lerp(Color3.new(0, 1, 0), players:FindFirstChild(arg1).Character.Humanoid.Health / players:FindFirstChild(arg1).Character.Humanoid.MaxHealth)
         end
-
-        Highlight.FillColor = FillColor
-        Highlight.DepthMode = DepthMode
-        Highlight.FillTransparency = FillTransparency
-        Highlight.OutlineColor = OutlineColor
-        Highlight.OutlineTransparency = OutlineTransparency
     end
 end
 
