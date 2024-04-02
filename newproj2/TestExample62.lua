@@ -1,6 +1,6 @@
 --// Variables
 
-local Version = '5.61'
+local Version = '5.62'
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua"))()
 library.title = "KarpiWare V5 | Early-Access"
 
@@ -72,10 +72,14 @@ Highlight(arg1)
 end
 
 function Start()
+    if workspace:FindFirstChild('Holding') then
+        workspace:FindFirstChild('Holding'):Destroy()
+    end
     local partname = game:GetService('HttpService'):GenerateGUID()
 
     local Folder = Instance.new('Folder')
     Folder.Parent = workspace
+    Folder.Name = 'Holding'
     
     local Highlight = Instance.new("Highlight")
     Highlight.FillColor = Color3.fromRGB(255, 255, 255)
@@ -138,21 +142,22 @@ function Start()
 			if Target and Target:FindFirstAncestorOfClass("Model") then
 				local model = Target:FindFirstAncestorOfClass("Model")
 				if model:FindFirstChild("Humanoid") then
-					ESPTarget(model.Name)
                     if ScriptVariables.CurrentTarget == model.Name then
-                        Notif:Notify("Unset Target", 3, "information")
                         ScriptVariables.CurrentTarget = nil
+                        Notif:Notify("Unset Target", 3, "information")
                     else
                         ScriptVariables.CurrentTarget = model.Name
+                        ESPTarget(model.Name)
+                        Notif:Notify("Target Set: ".. ScriptVariables.CurrentTarget, 3, "information")
                     end
-
-                    Notif:Notify("Target Set: ".. ScriptVariables.CurrentTarget, 3, "information")
 				end
 			end
 		end
 	end
 	userInputService.InputBegan:Connect(onKeyPress)
 end
+
+Start()
 
     game:GetService('RunService').RenderStepped:Connect(function()
         if ScriptVariables.BlatantLock == true then
@@ -184,7 +189,6 @@ local SetTarget = Combat:NewKeybind("Set Target", Enum.KeyCode.Unknown, function
     mouse.KeyDown:Connect(function(Key)
         if tostring(string.upper(Key)) == tostring(input) then
             ScriptVariables.TargetSetKey = input
-           Start()
         end
     end)
 end)
