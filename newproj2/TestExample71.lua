@@ -1,11 +1,10 @@
 --// Variables
-
-local Version = '5.70'
+local Version = 5.71
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua"))()
 library.title = "KarpiWare V5 | Early-Access"
 
 local Notif = library:InitNotifications()
-Notif:Notify("Loading | Version ".. Version, 3, "information")
+Notif:Notify("Loading | Version ".. tostring(Version), 3, "information")
 
 library:Introduction()
 
@@ -14,7 +13,7 @@ local runService = game:GetService("RunService");
 local players = game:GetService("Players")
 local mouse = players.LocalPlayer:GetMouse()
 
-print('Version'..Version)
+print('Version'..tostring(Version))
 
 local UIS = game:GetService("UserInputService")
 
@@ -162,8 +161,6 @@ Start()
 
 game:GetService('RunService').RenderStepped:Connect(function()
 if ScriptVariables.BlatantLock == true then
-    local Module = loadstring(game:HttpGet("https://raw.githubusercontent.com/RapperDeluxe/scripts/main/silent%20aim%20module"))()
-    Module.TeamCheck(false)
     local Workspace = game:GetService("Workspace")
     local Players = game:GetService("Players")
 
@@ -177,9 +174,8 @@ if ScriptVariables.BlatantLock == true then
     end
 
         if NotDown() then
-            local SelectedPart = Module.SelectedPart
-            local Hit = SelectedPart.CFrame + (SelectedPart.Velocity * ScriptVariables.Prediction)
-
+            local find = players:FindFirstChild(ScriptVariables.CurrentTarget)
+            local Hit = find.Character.HumanoidRootPart
             Workspace.CurrentCamera.CFrame = CFrame.lookAt(Workspace.CurrentCamera.CFrame.Position, Hit.Position)
         end
     elseif ScriptVariables.BlatantLock == false or ScriptVariables.CurrentTarget == nil then
