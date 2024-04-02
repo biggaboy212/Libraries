@@ -1,5 +1,5 @@
 --// Variables
-local Version = 5.73
+local Version = 5.74
 local library =
     loadstring(
     game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua")
@@ -374,7 +374,7 @@ local SettingsSection = Settings:NewSection("Settings")
 local SetTarget =
     Combat:NewKeybind(
     "Set Target",
-    Enum.KeyCode.Unknown,
+    Enum.KeyCode,
     function(input)
         ScriptVariables.TargetSetKey = input
     end
@@ -391,9 +391,9 @@ local VisualizeTargetSet =
             ScriptVariables.VisualizeTargetSet = false
         end
     end
-):AddKeybind(Enum.KeyCode.Unknown)
+):AddKeybind(Enum.KeyCode)
 
-local FOVRadius = Tab1:NewSlider("FOV Radius", "", true, "/", {min = 1, max = 1000, default = 100}, function(value)
+local FOVRadius = Combat:NewSlider("FOV Radius", "", true, "/", {min = 1, max = 1000, default = 100}, function(value)
     ScriptVariables.VisualizeTargetSetRadius = value
 end)
 
