@@ -1,5 +1,5 @@
 --// Variables
-local Version = 5.76
+local Version = 5.77
 local library =
     loadstring(
     game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua")
@@ -181,7 +181,7 @@ function circle:Update()
 
     self.PlayerInRadius = self:CheckPlayerInRadius()
 
-    self.Instance.Thickness = self.PlayerInRadius and 3 or self.Thickness
+    self.Instance.Thickness = self.PlayerInRadius and 2 or self.Thickness
 end
 
 function circle:Destroy()
@@ -202,23 +202,6 @@ function circle:CheckPlayerInRadius()
     end
     return false
 end
-
-setmetatable(
-    circle,
-    {
-        __index = function(tbl, key)
-            return tbl.Instance[key]
-        end,
-        __newindex = function(tbl, key, value)
-            if tbl.Instance[key] ~= nil then
-                tbl.Instance[key] = value
-            else
-                rawset(tbl, key, value)
-            end
-            tbl:Update()
-        end
-    }
-)
 
 function GetClosestTargetPartToCursor(Character)
     local TargetParts = {"Head", "HumanoidRootPart"}
@@ -303,6 +286,9 @@ Heartbeat:Connect(
 
 game:GetService("RunService").RenderStepped:Connect(
     function()
+        circle.Instance.Radius = ScriptVariables.VisualizeTargetSetRadius
+        circle.Instance.Visible = ScriptVariables.VisualizeTargetSet
+
         if ScriptVariables.BlatantLock == true then
             local Workspace = game:GetService("Workspace")
             local Players = game:GetService("Players")
