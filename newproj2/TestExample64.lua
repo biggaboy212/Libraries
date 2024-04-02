@@ -1,6 +1,6 @@
 --// Variables
 
-local Version = '5.62'
+local Version = '5.64'
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua"))()
 library.title = "KarpiWare V5 | Early-Access"
 
@@ -159,19 +159,21 @@ end
 
 Start()
 
-    game:GetService('RunService').RenderStepped:Connect(function()
-        if ScriptVariables.BlatantLock == true then
-            local Camera = workspace.CurrentCamera
-            local Lookat1 = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget)
-            local LookAt = Lookat1.Character:FindFirstChild('HumanoidRootPart')
+local OriginalCameraCFrame = workspace.CurrentCamera.CFrame
 
-            local offset = Vector3.new(0, LookAt.Size.Y / 2, 3)
-            Camera.CameraType = Enum.CameraType.Scriptable
-            
-            local partPos = LookAt.Position
-            Camera.CFrame = CFrame.lookAt(partPos + offset, partPos)
-        end
-    end)
+game:GetService('RunService').RenderStepped:Connect(function()
+    if ScriptVariables.BlatantLock == true then
+        local Lookat1 = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget)
+        local LookAt = Lookat1.Character:FindFirstChild('HumanoidRootPart')
+
+        local CurentCamera = workspace.CurrentCamera
+        local originalCframe = CurentCamera.CFrame
+        
+        CurentCamera.CameraType = Enum.CameraType.Scriptable
+        CurentCamera.CFrame = CFrame.lookAt(originalCframe.p, LookAt.Position)
+    end
+end)
+
 
 --// Library Startup
 task.wait(1)
