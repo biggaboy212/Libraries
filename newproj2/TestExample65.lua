@@ -1,6 +1,6 @@
 --// Variables
 
-local Version = '5.64'
+local Version = '5.65'
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua"))()
 library.title = "KarpiWare V5 | Early-Access"
 
@@ -163,14 +163,34 @@ local OriginalCameraCFrame = workspace.CurrentCamera.CFrame
 
 game:GetService('RunService').RenderStepped:Connect(function()
     if ScriptVariables.BlatantLock == true then
-        local Lookat1 = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget)
-        local LookAt = Lookat1.Character:FindFirstChild('HumanoidRootPart')
+        local CurrentPlayer = game.Players.LocalPlayer
+        local TargetPlayer = game.Players:FindFirstChild(ScriptVariables.CurrentTarget)
 
-        local CurentCamera = workspace.CurrentCamera
-        local originalCframe = CurentCamera.CFrame
-        
-        CurentCamera.CameraType = Enum.CameraType.Scriptable
-        CurentCamera.CFrame = CFrame.lookAt(originalCframe.p, LookAt.Position)
+        if CurrentPlayer and TargetPlayer then
+            local CurrentRootPart = CurrentPlayer.Character and CurrentPlayer.Character:FindFirstChild("HumanoidRootPart")
+            local TargetRootPart = TargetPlayer.Character and TargetPlayer.Character:FindFirstChild("HumanoidRootPart")
+
+            if CurrentRootPart and TargetRootPart then
+                local CurrentCamera = workspace.CurrentCamera
+                local Offset = Vector3.new(0, TargetRootPart.Size.Y / 2, 3)
+                local TargetPosition = TargetRootPart.Position
+
+                CurrentCamera.CameraType = Enum.CameraType.Scriptable
+                CurrentCamera.CFrame = CFrame.lookAt(CurrentRootPart.Position + Offset, TargetPosition)
+            end
+        end
+    elseif ScriptVariables.BlatantLock == false then
+        local CurrentPlayer = game.Players.LocalPlayer
+        local CurrentRootPart = CurrentPlayer.Character and CurrentPlayer.Character:FindFirstChild("HumanoidRootPart")
+
+        if CurrentRootPart then
+            local CurrentCamera = workspace.CurrentCamera
+            local Offset = Vector3.new(0, CurrentRootPart.Size.Y / 2, 3)
+            local TargetPosition = CurrentRootPart.Position
+
+            CurrentCamera.CameraType = Enum.CameraType.Scriptable
+            CurrentCamera.CFrame = CFrame.lookAt(TargetPosition + Offset, TargetPosition)
+        end
     end
 end)
 
