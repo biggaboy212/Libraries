@@ -1,5 +1,5 @@
 --// Variables
-local Version = 5.72
+local Version = 5.73
 local library =
     loadstring(
     game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua")
@@ -55,13 +55,13 @@ function ESPTarget(arg1)
         Highlight.OutlineTransparency = OutlineTransparency
         Highlight.Parent = game:GetService("CoreGui")
 
-        if players:FindFirstChild(arg1).Character then
-            Highlight.Adornee = players:FindFirstChild(arg1).Character
+        if players:FindFirstChild(plr).Character then
+            Highlight.Adornee = players:FindFirstChild(plr).Character
         end
 
         function Update()
             if
-                not players:FindFirstChild(arg1) or ScriptVariables.CurrentTarget == nil or
+                not players:FindFirstChild(plr) or ScriptVariables.CurrentTarget == nil or
                     ScriptVariables.VisualizeTargetSet == false
              then
                 Highlight:Destroy()
@@ -70,8 +70,8 @@ function ESPTarget(arg1)
                 Highlight.FillColor =
                     Color3.new(1, 0, 0):Lerp(
                     Color3.new(0, 1, 0),
-                    players:FindFirstChild(arg1).Character.Humanoid.Health /
-                        players:FindFirstChild(arg1).Character.Humanoid.MaxHealth
+                    players:FindFirstChild(plr).Character.Humanoid.Health /
+                        players:FindFirstChild(plr).Character.Humanoid.MaxHealth
                 )
             end
         end
@@ -182,8 +182,8 @@ local circle = {
     Instance = Drawing.new("Circle"),
     Visible = ScriptVariables.VisualizeTargetSet,
     Radius = ScriptVariables.VisualizeTargetSetRadius,
-    Color = Color3.fromRGB(255, 255, 0),
-    Thickness = 2,
+    Color = Color3.fromRGB(255, 255, 255),
+    Thickness = 1,
     Filled = false,
     PlayerInRadius = false
 }
@@ -205,7 +205,7 @@ function circle:Update()
 
     self.PlayerInRadius = self:CheckPlayerInRadius()
 
-    self.Instance.Thickness = self.PlayerInRadius and 4 or self.Thickness
+    self.Instance.Thickness = self.PlayerInRadius and 3 or self.Thickness
 end
 
 function circle:Destroy()
@@ -379,6 +379,23 @@ local SetTarget =
         ScriptVariables.TargetSetKey = input
     end
 )
+
+local VisualizeTargetSet =
+    Combat:NewToggle(
+    "Visualize Target Set",
+    false,
+    function(value)
+        if value then
+            ScriptVariables.VisualizeTargetSet = true
+        else
+            ScriptVariables.VisualizeTargetSet = false
+        end
+    end
+):AddKeybind(Enum.KeyCode.Unknown)
+
+local FOVRadius = Tab1:NewSlider("FOV Radius", "", true, "/", {min = 1, max = 1000, default = 100}, function(value)
+    ScriptVariables.VisualizeTargetSetRadius = value
+end)
 
 local BlatantLock =
     Combat:NewToggle(
