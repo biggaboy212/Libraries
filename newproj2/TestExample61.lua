@@ -1,5 +1,6 @@
 --// Variables
 
+local Version = '5.61'
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua"))()
 library.title = "KarpiWare V5 | Early-Access"
 
@@ -8,7 +9,6 @@ Notif:Notify("Loading | Version ".. Version, 3, "information")
 
 library:Introduction()
 
-local Version = '5.60'
 local HttpService = game:GetService("HttpService")
 local runService = game:GetService("RunService");
 local players = game:GetService("Players")
