@@ -1,5 +1,5 @@
 --// Variables
-local Version = 5.74
+local Version = 5.75
 local library =
     loadstring(
     game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua")
@@ -374,7 +374,7 @@ local SettingsSection = Settings:NewSection("Settings")
 local SetTarget =
     Combat:NewKeybind(
     "Set Target",
-    Enum.KeyCode,
+    Enum.KeyCode.E,
     function(input)
         ScriptVariables.TargetSetKey = input
     end
@@ -383,7 +383,7 @@ local SetTarget =
 local VisualizeTargetSet =
     Combat:NewToggle(
     "Visualize Target Set",
-    false,
+    true,
     function(value)
         if value then
             ScriptVariables.VisualizeTargetSet = true
@@ -391,7 +391,7 @@ local VisualizeTargetSet =
             ScriptVariables.VisualizeTargetSet = false
         end
     end
-):AddKeybind(Enum.KeyCode)
+)
 
 local FOVRadius = Combat:NewSlider("FOV Radius", "", true, "/", {min = 1, max = 1000, default = 100}, function(value)
     ScriptVariables.VisualizeTargetSetRadius = value
@@ -410,7 +410,7 @@ local BlatantLock =
             Notif:Notify("Disabled Lock", 3, "information")
         end
     end
-):AddKeybind(Enum.KeyCode.Unknown)
+):AddKeybind(Enum.KeyCode.T)
 
 --[[
 local a1 = Combat:NewButton("Button", function()
