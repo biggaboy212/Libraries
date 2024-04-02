@@ -1,5 +1,5 @@
 --// Variables
-local Version = 5.75
+local Version = 5.76
 local library =
     loadstring(
     game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua")
@@ -39,7 +39,7 @@ function ESPTarget(arg1)
         end
     end
 
-    local FillColor = Color3.fromRGB(145, 0, 255)
+    local FillColor = Color3.fromRGB(255, 255, 255)
     local DepthMode = "AlwaysOnTop"
     local FillTransparency = 0.8
     local OutlineColor = Color3.fromRGB(255, 255, 255)
@@ -88,56 +88,32 @@ function ESPTarget(arg1)
     Highlight(arg1)
 end
 
-if workspace:FindFirstChild("Holding") then
-    workspace:FindFirstChild("Holding"):Destroy()
+if workspace:FindFirstChild("PreESPHL") then
+    workspace:FindFirstChild("PreESPHL"):Destroy()
 end
 local partname = game:GetService("HttpService"):GenerateGUID()
-
-local Folder = Instance.new("Folder")
-Folder.Parent = workspace
-Folder.Name = "Holding"
 
 local Highlight = Instance.new("Highlight")
 Highlight.FillColor = Color3.fromRGB(255, 255, 255)
 Highlight.FillTransparency = 0.6
-Highlight.Parent = Folder
-
-local Part = Instance.new("Part")
-Part.BottomSurface = Enum.SurfaceType.Smooth
-Part.TopSurface = Enum.SurfaceType.Smooth
-Part.Color = Color3.fromRGB(255, 255, 0)
-Part.Material = Enum.Material.ForceField
-Part.Size = Vector3.new(0.5, 0.5, 0.5)
-Part.CFrame = CFrame.new(-2.57000732421875, 0.25, -8.45001220703125)
-Part.Shape = Enum.PartType.Ball
-Part.Anchored = true
-
-local plrs = game:GetService("Players")
-local hrp = plrs.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+Highlight.Parent = workspace
+Highlight.Name = partname
 
 local highlightPart = Highlight
-highlightPart.Parent = Folder
-
-local mouse = plrs.LocalPlayer:GetMouse()
-local userInputService = game:GetService("UserInputService")
 
 local function update()
     local Target = mouse.Target
-    if Folder:FindFirstChild(partname) then
-        Folder[partname]:Destroy()
+    if workspace:FindFirstChild(partname) then
+        workspace[partname]:Destroy()
     end
-    local new = Part:Clone()
-    mouse.TargetFilter = new
-    new.CFrame = CFrame.new(mouse.Hit.X, mouse.Hit.Y, mouse.Hit.Z)
-    new.Parent = Folder
-    new.Name = partname
+    local modeltarg
     if Target and Target:FindFirstAncestorOfClass("Model") then
         local model = Target:FindFirstAncestorOfClass("Model")
         if model:FindFirstChild("Humanoid") then
-            new.Color = Color3.fromRGB(0, 255, 0)
+            modeltarg = model
             local part = Target
             if part then
-                highlightPart.Parent = part.Parent
+                highlightPart.Adornee = model
             end
 
             return
@@ -145,7 +121,7 @@ local function update()
     end
 
     if ScriptVariables.VisualizeTargetSet == true then
-        highlightPart.Parent = Folder
+        highlightPart.Adornee = modeltarg
     else
         highlightPart:Destroy()
     end
