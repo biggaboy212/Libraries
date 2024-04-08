@@ -8,7 +8,7 @@ if game:GetService('Players').LocalPlayer.UserId ~= nil then
 --// Variables
 local Version = 5.80
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua"))()
-local Sense = loadstring(game:HttpGet('https://raw.githubusercontent.com/biggaboy212/Sirius/request/library/sense/source.lua'))()
+local Sense = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Sirius/request/library/sense/source.lua'))()
 Sense.Load()
 Sense.sharedSettings.textSize = 12
 Sense.sharedSettings.textFont = 0
