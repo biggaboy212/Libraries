@@ -379,53 +379,58 @@ coroutine.wrap(function()
 
             Converted["_Target"].Text = ScriptVariables.CurrentTarget
             local player = players:FindFirstChild(ScriptVariables.CurrentTarget)
-    
-            local userId = player.UserId
-            local thumbType = Enum.ThumbnailType.HeadShot
-            local thumbSize = Enum.ThumbnailSize.Size420x420
-            local content, isReady = Players:GetUserThumbnailAsync(userId, thumbType, thumbSize)
-    
-            local bar = Converted["_Healthbar1"]
-            local hpText = Converted["_Health"]
-            local player = players:FindFirstChild(ScriptVariables.CurrentTarget)
-            repeat wait() until player.Character
-            local character = player.Character
-    
-            local function update()
-                local humanoid = character:WaitForChild("Humanoid")
-                bar.Size = UDim2.new(humanoid.Health / humanoid.MaxHealth, 0, 1, 0)
-                hpText.Text = 'Health - '.. math.ceil(humanoid.Health) .. '/'.. math.ceil(humanoid.MaxHealth)
-            end
-    
-            local function setConnections()
-                local humanoid = character:WaitForChild("Humanoid")
-                if humanoid then
-                    humanoid:GetPropertyChangedSignal("Health"):Connect(update)
-                    humanoid:GetPropertyChangedSignal("MaxHealth"):Connect(update)
-                end
-                update()
-            end
-    
-            local newbar = Converted["_Healthbar"]
-            local newhptext = Converted["_Armour"]
+            if player then
+                local userId = player.UserId
+                local thumbType = Enum.ThumbnailType.HeadShot
+                local thumbSize = Enum.ThumbnailSize.Size420x420
+                local content, isReady = Players:GetUserThumbnailAsync(userId, thumbType, thumbSize)
+        
+                local bar = Converted["_Healthbar1"]
+                local hpText = Converted["_Health"]
+                if ScriptVariables.CurrentTarget ~= nil then
+                    local player = players:FindFirstChild(ScriptVariables.CurrentTarget)
+                    if player then
+                        repeat wait() until player.Character
+                        local character = player.Character
+                
+                        local function update()
+                            local humanoid = character:WaitForChild("Humanoid")
+                            bar.Size = UDim2.new(humanoid.Health / humanoid.MaxHealth, 0, 1, 0)
+                            hpText.Text = 'Health - '.. math.ceil(humanoid.Health) .. '/'.. math.ceil(humanoid.MaxHealth)
+                        end
+                
+                        local function setConnections()
+                            local humanoid = character:WaitForChild("Humanoid")
+                            if humanoid then
+                                humanoid:GetPropertyChangedSignal("Health"):Connect(update)
+                                humanoid:GetPropertyChangedSignal("MaxHealth"):Connect(update)
+                            end
+                            update()
+                        end
+                
+                        local newbar = Converted["_Healthbar"]
+                        local newhptext = Converted["_Armour"]
 
-            local function updatea()
-                newbar.Size = UDim2.new(character.BodyEffects.Armor.Value / 100, 0, 1, 0)
-                newhptext.Text = 'Armour - '.. math.ceil(character.BodyEffects.Armor.Value) .. '/'.. math.ceil(100)
-            end
-            
-            local function setConnectionsa()
-                local arm = character:FindFirstChild('BodyEffects'):FindFirstChild('Armor')
-                if arm then
-                    arm:GetPropertyChangedSignal("Value"):Connect(updatea)
+                        local function updatea()
+                            newbar.Size = UDim2.new(character.BodyEffects.Armor.Value / 100, 0, 1, 0)
+                            newhptext.Text = 'Armour - '.. math.ceil(character.BodyEffects.Armor.Value) .. '/'.. math.ceil(100)
+                        end
+                        
+                        local function setConnectionsa()
+                            local arm = character:FindFirstChild('BodyEffects'):FindFirstChild('Armor')
+                            if arm then
+                                arm:GetPropertyChangedSignal("Value"):Connect(updatea)
+                            end
+                            updatea()
+                        end
+                
+                        setConnections()
+                        setConnectionsa()
+                
+                        Converted["_TargetFrame"].Image = (isReady and content)
+                    end
                 end
-                updatea()
             end
-    
-            setConnections()
-            setConnectionsa()
-    
-            Converted["_TargetFrame"].Image = (isReady and content)
         else
             Converted["_TargetGUI"].Enabled = false
         end
