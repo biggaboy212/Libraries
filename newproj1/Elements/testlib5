@@ -6,12 +6,12 @@ if game:GetService('Players').LocalPlayer.UserId ~= nil then
     })
 
 --// Variables
-local Version = 5.80
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua"))()
+local Version = 5.82
+local library = loadstring(game:HttpGet('https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua'))()
 local Sense = loadstring(game:HttpGet('https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj1/Elements/senseadjusted'))()
 Sense.Load()
 Sense.sharedSettings.textSize = 12
-Sense.sharedSettings.textFont = 0
+Sense.sharedSettings.textFont = 1
 
 library.title = "KarpiWare V5 | Early-Access"
 
@@ -20,6 +20,33 @@ Notif:Notify("Loading | Version " .. tostring(Version), 3, "information")
 
 local players = game:GetService("Players")
 local mouse = players.LocalPlayer:GetMouse()
+
+local BillboardGui = Instance.new("BillboardGui")
+BillboardGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+BillboardGui.Active = true
+BillboardGui.LightInfluence = 1
+BillboardGui.AlwaysOnTop = true
+BillboardGui.Size = UDim2.new(0, 200, 0, 50)
+BillboardGui.StudsOffset = Vector3.new(0, 3, 0)
+BillboardGui.Parent = game:GetService('CoreGui')
+
+local Highlight = Instance.new("Highlight")
+Highlight.FillColor = Color3.fromRGB(255, 255, 255)
+Highlight.Parent = BillboardGui
+
+local TextLabel = Instance.new("TextLabel")
+TextLabel.Size = UDim2.new(0, 200, 0, 50)
+TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel.BackgroundTransparency = 1
+TextLabel.BorderSizePixel = 0
+TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.FontSize = Enum.FontSize.Size14
+TextLabel.TextStrokeTransparency = 0
+TextLabel.TextSize = 14
+TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.Text = "Target"
+TextLabel.Font = Enum.Font.Code
+TextLabel.Parent = BillboardGui
 
 local ScriptVariables = {
     TargetSetKey = 'T',
@@ -198,7 +225,6 @@ local GuiService = game:GetService("GuiService")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
-local Heartbeat = RunService.Heartbeat
 local LocalPlayer = Players.LocalPlayer
 local CurrentCamera = Workspace.CurrentCamera
 local Mouse = LocalPlayer:GetMouse()
@@ -307,6 +333,10 @@ end
 
 function UnsetTarget()
     ScriptVariables.CurrentTarget = nil
+    if Highlight and BillboardGui then
+        Highlight.Adornee = nil
+        BillboardGui.Adornee = nil
+    end
     Notif:Notify("Target Unset", 3, "information")
 end
 
@@ -317,6 +347,10 @@ function SetClosest()
             UnsetTarget()
         else
             ScriptVariables.CurrentTarget = ClosestPlayer.Name
+            if ScriptVariables.VisualizeTargetSet and game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget) and Highlight and BillboardGui then
+                Highlight.Adornee = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget)
+                BillboardGui.Adornee = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget)
+            end
             Notif:Notify("Target Set: " .. ScriptVariables.CurrentTarget, 3, "information")
         end
     else
@@ -359,9 +393,12 @@ end
 game:GetService("RunService").RenderStepped:Connect(
     function()
 
+        Sense.teamSettings.enemy.box3dColor[1] = Color3.new(ScriptVariables.R , ScriptVariables.G, ScriptVariables.B)
         Sense.teamSettings.enemy.boxColor[1] = Color3.new(ScriptVariables.R , ScriptVariables.G, ScriptVariables.B)
         Sense.teamSettings.enemy.tracerColor[1] = Color3.new(ScriptVariables.R , ScriptVariables.G, ScriptVariables.B)
         Sense.teamSettings.enemy.nameColor[1] = Color3.new(ScriptVariables.R , ScriptVariables.G, ScriptVariables.B)
+        Sense.teamSettings.enemy.chamsFillColor[1] = Color3.new(ScriptVariables.R , ScriptVariables.G, ScriptVariables.B)
+        Sense.teamSettings.enemy.chamsOutlineColor[1] = Color3.new(ScriptVariables.R , ScriptVariables.G, ScriptVariables.B)
 
         if ScriptVariables.ViewTarget and players:FindFirstChild(ScriptVariables.CurrentTarget) then
             workspace.CurrentCamera.CameraSubject = players:FindFirstChild(ScriptVariables.CurrentTarget).Character
@@ -1364,15 +1401,6 @@ local chams =
     end
 )
 
-local HealthText =
-    Visuals:NewToggle(
-    "Health Text",
-    false,
-    function(value)
-        Sense.teamSettings.enemy.healthtext = value
-    end
-)
-
 local Tracers =
     Visuals:NewToggle(
     "Tracers",
@@ -1393,15 +1421,15 @@ local Names =
     end
 )
 
-local espr = Visuals:NewTextbox("ESP Red", "255", "RGB [R]", "numbers", "small", true, false, function(val)
+local espr = Visuals:NewTextbox("ESP Red", "", "RGB [R]", "numbers", "small", true, false, function(val)
     ScriptVariables.R = tonumber(val)
 end)
 
-local espg = Visuals:NewTextbox("ESP Green", "255", "RGB [G]", "numbers", "small", true, false, function(val)
+local espg = Visuals:NewTextbox("ESP Green", "", "RGB [G]", "numbers", "small", true, false, function(val)
     ScriptVariables.G = tonumber(val)
 end)
 
-local espb = Visuals:NewTextbox("ESP Blue", "255", "RGB [B]", "numbers", "small", true, false, function(val)
+local espb = Visuals:NewTextbox("ESP Blue", "", "RGB [B]", "numbers", "small", true, false, function(val)
     ScriptVariables.B = tonumber(val)
 end)
 
