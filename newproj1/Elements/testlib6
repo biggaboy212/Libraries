@@ -30,23 +30,23 @@ BillboardGui.Size = UDim2.new(0, 200, 0, 50)
 BillboardGui.StudsOffset = Vector3.new(0, 3, 0)
 BillboardGui.Parent = game:GetService('CoreGui')
 
-local Highlight = Instance.new("Highlight")
-Highlight.FillColor = Color3.fromRGB(255, 255, 255)
-Highlight.Parent = BillboardGui
-
 local TextLabel = Instance.new("TextLabel")
 TextLabel.Size = UDim2.new(0, 200, 0, 50)
 TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
 TextLabel.BackgroundTransparency = 1
 TextLabel.BorderSizePixel = 0
 TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel.FontSize = Enum.FontSize.Size14
+TextLabel.FontSize = Enum.FontSize.Size18
 TextLabel.TextStrokeTransparency = 0
-TextLabel.TextSize = 14
+TextLabel.TextSize = 15
 TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 TextLabel.Text = "Target"
-TextLabel.Font = Enum.Font.Code
+TextLabel.Font = Enum.Font.Fantasy
 TextLabel.Parent = BillboardGui
+
+local Highlight = Instance.new("Highlight")
+Highlight.FillColor = Color3.fromRGB(255, 255, 255)
+Highlight.Parent = BillboardGui
 
 local ScriptVariables = {
     TargetSetKey = 'T',
@@ -347,9 +347,9 @@ function SetClosest()
             UnsetTarget()
         else
             ScriptVariables.CurrentTarget = ClosestPlayer.Name
-            if ScriptVariables.VisualizeTargetSet and game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget) and Highlight and BillboardGui then
-                Highlight.Adornee = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget)
-                BillboardGui.Adornee = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget)
+            if ScriptVariables.VisualizeTargetSet and game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character and Highlight and BillboardGui then
+                Highlight.Adornee = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character
+                BillboardGui.Adornee = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character:FindFirstChild("Head")
             end
             Notif:Notify("Target Set: " .. ScriptVariables.CurrentTarget, 3, "information")
         end
