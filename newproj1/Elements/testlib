@@ -1,0 +1,1428 @@
+if game:GetService('Players').LocalPlayer.UserId ~= nil then
+
+    game:GetService("StarterGui"):SetCore("SendNotification",{
+        Title = "WL SYS",
+        Text = "You are whitelisted (Free for early access)",
+    })
+
+--// Variables
+local Version = 5.80
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua"))()
+local Sense = loadstring(game:HttpGet('https://raw.githubusercontent.com/biggaboy212/Sirius/request/library/sense/source.lua'))()
+Sense.Load()
+Sense.sharedSettings.textSize = 12
+Sense.sharedSettings.textFont = 0
+
+library.title = "KarpiWare V5 | Early-Access"
+
+local Notif = library:InitNotifications()
+Notif:Notify("Loading | Version " .. tostring(Version), 3, "information")
+
+local players = game:GetService("Players")
+local mouse = players.LocalPlayer:GetMouse()
+
+local ScriptVariables = {
+    TargetSetKey = 'T',
+
+    CurrentTarget = nil,
+    DynamicColour = true,
+
+    ViewTarget= false,
+
+    BlatantLock = nil,
+    Prediction = 0,
+    AutoPrediction = false,
+    AddToAutoPredict = 0,
+
+    VisualizeTargetSet = true,
+    VisualizeTargetSetRadius = 100,
+
+    TargetStrafe = false,
+    StrafeHeight = 1,
+    StrafeDistance = 1,
+    StrafeSpeed = 1,
+
+    RandomOrbit = false,
+    RandomRange = 3,
+
+    UnderGroundFollow = false,
+    UnderGroundDistance = 5,
+
+    PredFollow = false,
+
+    NoRecoil = false,
+
+    CFrameWalking = false,
+    CFrameWalkingSpeed = 1.25,
+
+    AntiSlow = false,
+    AntiJumpSlow = false,
+
+    R = 255,
+    G = 255,
+    B = 255,
+
+    AutoStomp = false,
+
+    SpawnCashCommand = false,
+    
+    HighTool = false,
+
+    ArrowLock = false,
+
+    HellTarget = false,
+    HeavenTarget = false,
+
+    BreakArrows = false,
+    BreakGrenades = false,
+    BreakRPG = false,
+}
+
+--// Functions
+local function transfernetworkowenership(arg1, arg2, truebreak)
+    if not truebreak then
+        arg1.CFrame = arg2.CFrame
+    else
+        arg1.CFrame = arg2.CFrame - Vector3.new(-1000,-1000,-1000)
+    end
+end
+
+game:GetService("RunService").Heartbeat:Connect(function ()
+    if ScriptVariables.ArrowLock and ScriptVariables.CurrentTarget ~= nil then
+        local Arrow = game:GetService('Workspace'):FindFirstChild('Arrow')
+        local TW = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character
+        if Arrow and TW then
+            local RootPart = TW:FindFirstChild('HumanoidRootPart')
+            if RootPart then
+                transfernetworkowenership(Arrow, RootPart)
+            end
+        end
+
+    elseif ScriptVariables.BreakArrows then
+        local Arrow = game:GetService('Workspace'):FindFirstChild('Arrow')
+        if Arrow then
+            local RootPart = workspace['Ignored']['CENTER_OF_MAP']
+            if RootPart then
+                transfernetworkowenership(Arrow, RootPart)
+            end
+        end
+
+    elseif ScriptVariables.BreakGrenades then
+        local grenade = game.Workspace['Ignored']:FindFirstChild('Handle')
+        if grenade then
+            print('grenade found, transferring nwo')
+            local RootPart = workspace['Ignored']['CENTER_OF_MAP']
+            if RootPart then
+                transfernetworkowenership(grenade, RootPart)
+            end
+        end
+
+    elseif ScriptVariables.BreakRPG then
+        local rpg
+        if game:GetService("Workspace").Ignored:FindFirstChild('Model').Launcher then
+            rpg = game:GetService("Workspace").Ignored.Model.Launcher
+            local RootPart = workspace['Ignored']['CENTER_OF_MAP']
+            if RootPart then
+                transfernetworkowenership(rpg, RootPart, true)
+            end
+        end
+    end
+end)
+
+players.LocalPlayer.Chatted:Connect(
+    function(Chat)
+        if Chat == '!SpawnCash' and ScriptVariables.SpawnCashCommand then
+            local humanoid = game.Players.LocalPlayer.Character.Humanoid
+            local tool = game.Players.LocalPlayer.Backpack["[Money Gun]"]
+
+            humanoid:EquipTool(tool)
+            tool:Activate()
+            humanoid:UnequipTools(tool)
+        end
+    end
+)
+
+local oldspeed = 0
+
+local mt = getrawmetatable(game)
+local backup
+backup = hookfunction(mt.__newindex, newcclosure(function(self, key, value)
+    if key == "WalkSpeed" and value < 16 and ScriptVariables.AntiSlow then
+        return
+    end
+return backup(self, key, value)
+end))
+      local mt = getrawmetatable(game)
+local backup
+backup = hookfunction(mt.__newindex, newcclosure(function(self, key, value)
+    if key == "JumpPower" and value < 50 and ScriptVariables.AntiJumpSlow then
+        return
+    end
+return backup(self, key, value)
+end))
+
+local function calculatePredictionValue(ping)
+    local pingTenths = math.floor(ping / 10) / 10
+    local prediction = pingTenths * 0.1
+    prediction = math.max(math.min(prediction, 1), 0)
+    return prediction
+end
+
+local function getUserPing()
+    local ping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
+    return ping or 0
+end
+
+local function updatePredictionValue()
+    while true do
+        if ScriptVariables.AutoPrediction then
+            local userPing = getUserPing()
+            local predictionValue = calculatePredictionValue(userPing)
+            ScriptVariables.Prediction = predictionValue + ScriptVariables.AddToAutoPredict
+        end
+        task.wait(.5)
+    end
+end
+
+spawn(updatePredictionValue)
+
+
+-- AntiCheat 1 [1/2]
+local old old = hookmetamethod(game, "__namecall", newcclosure(function(...) local args = {...} if args[1] and typeof(args[2]) == "Instance" and args[2].Name == "TeleportDetect" and getnamecallmethod() == "FireServer" then return task.wait(9e9) end return old(...) end))
+
+
+
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local GuiService = game:GetService("GuiService")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local Heartbeat = RunService.Heartbeat
+local LocalPlayer = Players.LocalPlayer
+local CurrentCamera = Workspace.CurrentCamera
+local Mouse = LocalPlayer:GetMouse()
+
+local circle = {
+    Instance = Drawing.new("Circle"),
+    Visible = ScriptVariables.VisualizeTargetSet,
+    Radius = ScriptVariables.VisualizeTargetSetRadius,
+    Color = Color3.fromRGB(255, 255, 255),
+    Thickness = 1,
+    Filled = false,
+    PlayerInRadius = false
+}
+
+circle.Instance.Transparency = 1
+circle.Instance.Thickness = circle.Thickness
+circle.Instance.Color = circle.Color
+circle.Instance.Filled = circle.Filled
+
+function circle:Update()
+    if not (self.Instance) then
+        return
+    end
+
+    self.Instance.Visible = self.Visible
+    self.Instance.Radius = self.Radius
+    self.Instance.Position = Vector2.new(Mouse.X, Mouse.Y + GuiService:GetGuiInset().Y)
+
+    self.PlayerInRadius = self:CheckPlayerInRadius()
+
+    self.Instance.Thickness = self.PlayerInRadius and 2 or self.Thickness
+end
+
+function circle:Destroy()
+    self.Instance:Remove()
+    self = nil
+end
+
+function circle:CheckPlayerInRadius()
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local part = player.Character.HumanoidRootPart
+            local pos, onScreen = CurrentCamera:WorldToViewportPoint(part.Position)
+            local distance = (Vector2.new(pos.X, pos.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
+            if onScreen and distance <= ScriptVariables.VisualizeTargetSetRadius then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+function GetClosestTargetPartToCursor(Character)
+    local TargetParts = {"Head", "HumanoidRootPart"}
+    local ClosestPart = nil
+    local ClosestPartPosition = nil
+    local ClosestPartOnScreen = false
+    local ClosestPartMagnitudeFromMouse = nil
+    local ShortestDistance = math.huge
+
+    local function CheckTargetPart(TargetPart)
+        if (typeof(TargetPart) == "string") then
+            TargetPart = Character:FindFirstChild(TargetPart)
+        end
+        if not TargetPart then
+            return
+        end
+        local PartPos, OnScreen = CurrentCamera:WorldToViewportPoint(TargetPart.Position)
+        local GuiInset = GuiService:GetGuiInset(GuiService)
+        local Magnitude = (Vector2.new(PartPos.X, PartPos.Y - GuiInset.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
+        if Magnitude < ShortestDistance then
+            ClosestPart = TargetPart
+            ClosestPartPosition = PartPos
+            ClosestPartOnScreen = OnScreen
+            ClosestPartMagnitudeFromMouse = Magnitude
+            ShortestDistance = Magnitude
+        end
+    end
+
+    for _, TargetPartName in ipairs(TargetParts) do
+        CheckTargetPart(TargetPartName)
+    end
+
+    return ClosestPart, ClosestPartPosition, ClosestPartOnScreen, ClosestPartMagnitudeFromMouse
+end
+
+function GetClosestPlayerToCursor()
+    local ClosestPlayer = nil
+    local ShortestDistance = math.huge
+
+    for _, Player in ipairs(Players:GetPlayers()) do
+        local Character = Player.Character
+        if Character then
+            local TargetPart, _, _, Magnitude = GetClosestTargetPartToCursor(Character)
+            if TargetPart then
+                if circle.Radius > Magnitude and Magnitude < ShortestDistance then
+                    ClosestPlayer = Player
+                    ShortestDistance = Magnitude
+                end
+            end
+        end
+    end
+
+    return ClosestPlayer
+end
+
+function UnsetTarget()
+    ScriptVariables.CurrentTarget = nil
+    Notif:Notify("Target Unset", 3, "information")
+end
+
+function SetClosest()
+    local ClosestPlayer = GetClosestPlayerToCursor()
+    if ClosestPlayer ~= nil and ClosestPlayer.Name ~= players.LocalPlayer.Name then
+        if ScriptVariables.CurrentTarget == ClosestPlayer.Name then
+            UnsetTarget()
+        else
+            ScriptVariables.CurrentTarget = ClosestPlayer.Name
+            Notif:Notify("Target Set: " .. ScriptVariables.CurrentTarget, 3, "information")
+        end
+    else
+        UnsetTarget()
+    end
+end
+
+
+UserInputService.InputBegan:Connect(
+    function(input, isProcessed)
+        if not isProcessed and input.KeyCode == Enum.KeyCode[ScriptVariables.TargetSetKey] then
+            SetClosest()
+        end
+    end
+)
+
+local function updateStrafe()
+    local targetPlayer = players:FindFirstChild(ScriptVariables.CurrentTarget)
+    if not targetPlayer then
+        return
+    end
+
+    local targetHumanoidRootPart = targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not targetHumanoidRootPart then
+        return
+    end
+
+    local rootPart = players.LocalPlayer.Character and players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not rootPart then
+        return
+    end
+
+
+    oldspeed = oldspeed + ScriptVariables.StrafeSpeed
+
+    rootPart.CFrame = targetHumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(oldspeed), 0) * CFrame.new(0, ScriptVariables.StrafeHeight, ScriptVariables.StrafeDistance)
+end
+
+
+game:GetService("RunService").RenderStepped:Connect(
+    function()
+
+        Sense.teamSettings.enemy.boxColor[1] = Color3.new(ScriptVariables.R , ScriptVariables.G, ScriptVariables.B)
+        Sense.teamSettings.enemy.tracerColor[1] = Color3.new(ScriptVariables.R , ScriptVariables.G, ScriptVariables.B)
+        Sense.teamSettings.enemy.nameColor[1] = Color3.new(ScriptVariables.R , ScriptVariables.G, ScriptVariables.B)
+
+        if ScriptVariables.ViewTarget and players:FindFirstChild(ScriptVariables.CurrentTarget) then
+            workspace.CurrentCamera.CameraSubject = players:FindFirstChild(ScriptVariables.CurrentTarget).Character
+        else
+            if players.LocalPlayer.Character then
+                workspace.CurrentCamera.CameraSubject = players.LocalPlayer.Character
+            end
+        end
+
+        circle:Update()
+
+        if ScriptVariables.TargetStrafe then
+            updateStrafe()
+        end
+    
+        if ScriptVariables.CFrameWalking then
+            local rootPart = players.LocalPlayer.Character and players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    
+            rootPart.CFrame = rootPart.CFrame + LocalPlayer.Character.Humanoid.MoveDirection * ScriptVariables.CFrameWalkingSpeed
+        end
+
+        if ScriptVariables.AutoStomp then
+            game:GetService('ReplicatedStorage').MainEvent:FireServer('Stomp')
+        end
+
+        circle.Instance.Radius = ScriptVariables.VisualizeTargetSetRadius
+        circle.Instance.Visible = ScriptVariables.VisualizeTargetSet
+
+        if ScriptVariables.BlatantLock == true then
+            local Workspace = game:GetService("Workspace")
+            local Players = game:GetService("Players")
+
+            function Down()
+                local Character = Players.LocalPlayer.Character
+
+                if (Character:WaitForChild("BodyEffects")["K.O"].Value or Character:FindFirstChild("GRABBING_CONSTRAINT") ~= nil) then
+                    return true
+                else
+                    return false
+                end
+            end
+
+            if not Down() then
+                if ScriptVariables.CurrentTarget ~= nil then
+                    local find = players:FindFirstChild(ScriptVariables.CurrentTarget)
+                    local Hit = find.Character.HumanoidRootPart.CFrame + (find.Character.HumanoidRootPart.Velocity * ScriptVariables.Prediction)
+
+                    Workspace.CurrentCamera.CFrame = CFrame.lookAt(Workspace.CurrentCamera.CFrame.Position, Hit.Position)
+                end
+            end
+        end
+    end
+)
+
+-- AntiCheat 2 [2/2]
+local Gmt = getrawmetatable(game)
+local Old = Gmt.__namecall
+local NewIndex
+
+assert(getrawmetatable)
+setreadonly(Gmt, false)
+
+game.CorePackages.Packages:Destroy()
+
+Gmt.__namecall = newcclosure(function(self, ...)
+	local Args = {...}
+
+	if tostring(Args[1]) == "BreathingHAMON" then
+		return
+	elseif tostring(Args[1]) == "TeleportDetect" then
+		return
+	elseif tostring(Args[1]) == "JJARC" then
+		return
+	elseif tostring(Args[1]) == "TakePoisonDamage" then
+		return
+	elseif tostring(Args[1]) == "CHECKER_1" then
+		return
+	elseif tostring(Args[1]) == "CHECKER" then
+		return
+	elseif tostring(Args[1]) == "GUI_CHECK" then
+		return
+	elseif tostring(Args[1]) == "OneMoreTime" then
+		return
+	elseif tostring(Args[1]) == "checkingSPEED" then
+		return
+	elseif tostring(Args[1]) == "BANREMOTE" then
+		return
+	elseif tostring(Args[1]) == "PERMAIDBAN" then
+		return
+	elseif tostring(Args[1]) == "KICKREMOTE" then
+		return
+	elseif tostring(Args[1]) == "BR_KICKPC" then
+		return
+	elseif tostring(Args[1]) == "FORCEFIELD" then
+		return
+	elseif tostring(Args[1]) == "Christmas_Sock" then
+		return
+	elseif tostring(Args[1]) == "VirusCough" then
+		return
+	elseif tostring(Args[1]) == "Symbiote" then
+		return
+	elseif tostring(Args[1]) == "Symbioted" then
+		return
+	end
+	return Old(self, ...)
+end)
+
+--// Library Startup
+task.wait(1)
+local Init = library:Init()
+
+Init:UpdateKeybind(Enum.KeyCode.F6)
+--
+-- Tabs
+local Combat = Init:NewTab("Combat")
+local CombatSection = Combat:NewSection("Combat")
+local Movement = Init:NewTab("Movement")
+local MovementSection = Movement:NewSection("Movement")
+local Visuals = Init:NewTab("Visuals")
+local VisualsSection = Visuals:NewSection("Visuals")
+local Misc = Init:NewTab("Misc")
+local MiscSection = Misc:NewSection("Misc")
+local Settings = Init:NewTab("Settings")
+local SettingsSection = Settings:NewSection("Settings")
+
+--// Elements
+local SetTarget =
+    Combat:NewKeybind(
+    "Set Target",
+    Enum.KeyCode.T,
+    function(input)
+        ScriptVariables.TargetSetKey = input
+    end
+)
+
+local VisualizeTargetSet =
+    Combat:NewToggle(
+    "Visualize Target Set",
+    true,
+    function(value)
+        if value then
+            ScriptVariables.VisualizeTargetSet = true
+        else
+            ScriptVariables.VisualizeTargetSet = false
+        end
+    end
+)
+
+local TargetTracers =
+    Combat:NewToggle(
+    "Target Set Tracers",
+    true,
+    function(value)
+        if value then
+            ScriptVariables.TargetTracers = true
+        else
+            ScriptVariables.TargetTracers = false
+        end
+    end
+)
+
+
+local FOVRadius = Combat:NewSlider("FOV Radius", "", true, "/", {min = 1, max = 1000, default = 100}, function(value)
+    ScriptVariables.VisualizeTargetSetRadius = value
+end)
+
+local BlatantLock =
+    Combat:NewToggle(
+    "Lock [Target]",
+    false,
+    function(value)
+        if value then
+            ScriptVariables.BlatantLock = true
+            Notif:Notify("Enabled Lock", 3, "information")
+        else
+            ScriptVariables.BlatantLock = false
+            Notif:Notify("Disabled Lock", 3, "information")
+        end
+    end
+):AddKeybind(Enum.KeyCode.E)
+
+local PredictionAmnt = Combat:NewTextbox("Lock Prediction", "", "e.g. 0.1200", "all", "medium", true, false, function(val)
+    ScriptVariables.Prediction = val
+end)
+
+local AutoPrediction =
+    Combat:NewToggle(
+    "AutoPrediction",
+    false,
+    function(value)
+        if value then
+            ScriptVariables.AutoPrediction = true
+        else
+            ScriptVariables.AutoPrediction = false
+        end
+    end
+)
+
+local AddToAutoPredict = Combat:NewTextbox("Add/Subtract Extra Prediction [Auto Prediction]", "", "Add/Subtract extra prediction to AutoPredict", "all", "medium", true, false, function(val)
+    ScriptVariables.AddToAutoPredict = val
+end)
+
+local ChatSpy = Misc:NewButton("ChatSpy [Creator - Dehoisted]", function()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/dehoisted/Chat-Spy/main/source/main.lua'))()
+end)
+
+NewIndex = hookmetamethod(game, "__newindex", function(Self, Index, Value)
+    if tostring(getcallingscript()) == "Framework" and tostring(Self):lower():find("camera") and tostring(Index) == "CFrame" and ScriptVariables.NoRecoil then
+        return
+    end
+    return NewIndex(Self, Index, Value)
+end)
+
+local NoRecoil =
+    Combat:NewToggle(
+    "No Recoil",
+    false,
+    function(value)
+        if value then
+            ScriptVariables.NoRecoil = true
+        else
+            ScriptVariables.NoRecoil = false
+        end
+    end
+)
+
+local HighTool =
+    Combat:NewToggle(
+    "High Tool",
+    false,
+    function(value)
+        ScriptVariables.HighTool = value
+
+        if ScriptVariables.HighTool then
+            local tool = game.Players.LocalPlayer.Character:FindFirstChildWhichIsA('Tool')
+
+            if tool then
+                tool.GripPos = Vector3.new(0,-10,0)
+                tool.Parent = game.Players.LocalPlayer.Backpack
+                tool.Parent = game.Players.LocalPlayer.Character
+            end
+        else
+            local tool = game.Players.LocalPlayer.Character:FindFirstChildWhichIsA('Tool')
+            if tool then
+                tool.GripPos = Vector3.new(0,0,0)
+                tool.Parent = game.Players.LocalPlayer.Backpack
+                tool.Parent = game.Players.LocalPlayer.Character
+            end
+        end
+    end
+)
+
+local Rejoin = Misc:NewButton("Rejoin", function()
+    game:GetService("TeleportService"):Teleport(game.PlaceId, players.LocalPlayer)
+end)
+
+local AntiSit = Misc:NewButton("Anti-Sit", function()
+    for _,a in pairs(workspace:GetDescendants()) do
+        if a:IsA("Seat") then
+            a:Remove()
+        end
+    end
+end)
+
+local ShowMasked = Misc:NewButton("Show Masked Names", function()
+    local players = game.Players:GetChildren()
+
+    for _, player in pairs(players) do
+        local character = player.Character
+        if character then
+            local humanoid = character:FindFirstChildWhichIsA('Humanoid')
+            if humanoid then
+                humanoid.DisplayDistanceType = 'Subject'
+            end
+        end
+    end
+end)
+
+local Creeper = Misc:NewButton("Creeper Script", function()
+    ScriptVariables.CreeperEnabled = false
+    local old
+
+    local CoreGui = game:GetService("StarterGui")
+        CoreGui:SetCore("SendNotification", {
+            Title = "Creeper script | biggaboy212";
+            Text = "B - Boom | J - Teleport to Grenades | U - Go Back";
+            Duration = math.huge;
+    })
+    
+    local FindPlayer
+    local Handle
+    
+    game:GetService("RunService").Heartbeat:Connect(function ()
+        Handle = game.Workspace['Ignored']:FindFirstChild('Handle')
+        FindPlayer = game:GetService("Players").LocalPlayer
+        if Handle and FindPlayer then
+            if FindPlayer.Character then
+                Handle.Position = FindPlayer.Character.UpperTorso.Position
+                Handle.CanCollide = false
+            end
+        end
+    end)
+    
+       mouse.KeyDown:connect(function(key)
+          if key == 'b' then
+            CoreGui:SetCore("SendNotification", {
+                Title = "Creeper! aww man...";
+                Text = "BOOM!!";
+                Duration = 5;
+            })
+            
+             local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    
+             local grenade = game.Players.LocalPlayer.Character:FindFirstChild('[Grenade]') or game.Players.LocalPlayer.Backpack:FindFirstChild('[Grenade]')
+          
+             if grenade then
+               grenade.Parent = game.Players.LocalPlayer.Character
+               grenade:Activate()
+               grenade:Activate()
+               grenade.Parent = game.Players.LocalPlayer.Backpack
+             end
+             task.wait(.5)
+          ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("💣💣💣", "All")
+          task.wait(.5)
+          ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("💣💣", "All")
+          task.wait(.5)
+          ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("💣", "All")
+          task.wait(1.5)
+          ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("Creeper! Aww mannn...", "All")
+          task.wait(.5)
+          startantinetworktransfer = false
+          elseif key == 'j' then
+            old = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(114.18929290771484, -26.752010345458984, -276.26934814453125)
+            elseif key == 'u' then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = old
+          end
+       end)
+end)
+
+local fpsboost = Misc:NewButton("FPS Boost", function()
+    local disableDecals = false -- Leaving this on makes games look shitty but the fps goes up by at least 20.
+    local gameService = game
+    local workspace = gameService.Workspace
+    local lighting = gameService.Lighting
+    local terrain = workspace.Terrain
+
+    sethiddenproperty(lighting, "Technology", 2)
+    sethiddenproperty(terrain, "Decoration", false)
+    terrain.WaterWaveSize = 0
+    terrain.WaterWaveSpeed = 0
+    terrain.WaterReflectance = 0
+    terrain.WaterTransparency = 0
+    lighting.GlobalShadows = 0
+    lighting.FogEnd = 9e9
+    lighting.Brightness = 0
+    settings().Rendering.QualityLevel = "Level01"
+
+    for _, descendant in pairs(workspace:GetDescendants()) do
+        if descendant:IsA("BasePart") and not descendant:IsA("MeshPart") then
+            descendant.Material = "Plastic"
+            descendant.Reflectance = 0
+        elseif (descendant:IsA("Decal") or descendant:IsA("Texture")) and disableDecals then
+            descendant.Transparency = 1
+        elseif descendant:IsA("ParticleEmitter") or descendant:IsA("Trail") then
+            descendant.Lifetime = NumberRange.new(0)
+        elseif descendant:IsA("Explosion") then
+            descendant.BlastPressure = 1
+            descendant.BlastRadius = 1
+        elseif descendant:IsA("Fire") or descendant:IsA("SpotLight") or descendant:IsA("Smoke") or descendant:IsA("Sparkles") then
+            descendant.Enabled = false
+        elseif descendant:IsA("MeshPart") and disableDecals then
+            descendant.Material = "Plastic"
+            descendant.Reflectance = 0
+            descendant.TextureID = 10385902758728957
+        elseif descendant:IsA("SpecialMesh") and disableDecals then
+            descendant.TextureId = 0
+        elseif descendant:IsA("ShirtGraphic") and disableDecals then
+            descendant.Graphic = 0
+        elseif (descendant:IsA("Shirt") or descendant:IsA("Pants")) and disableDecals then
+            descendant[descendant.ClassName .. "Template"] = 0
+        end
+    end
+
+    for _, effect in ipairs(lighting:GetChildren()) do
+        if effect:IsA("BlurEffect") or effect:IsA("SunRaysEffect") or effect:IsA("ColorCorrectionEffect") or effect:IsA("BloomEffect") or effect:IsA("DepthOfFieldEffect") then
+            effect.Enabled = false
+        end
+    end
+
+    workspace.DescendantAdded:Connect(function(descendant)
+        wait() -- prevent errors and shit
+        if descendant:IsA("BasePart") and not descendant:IsA("MeshPart") then
+            descendant.Material = "Plastic"
+            descendant.Reflectance = 0
+        elseif descendant:IsA("Decal") or descendant:IsA("Texture") and disableDecals then
+            descendant.Transparency = 1
+        elseif descendant:IsA("ParticleEmitter") or descendant:IsA("Trail") then
+            descendant.Lifetime = NumberRange.new(0)
+        elseif descendant:IsA("Explosion") then
+            descendant.BlastPressure = 1
+            descendant.BlastRadius = 1
+        elseif descendant:IsA("Fire") or descendant:IsA("SpotLight") or descendant:IsA("Smoke") or descendant:IsA("Sparkles") then
+            descendant.Enabled = false
+        elseif descendant:IsA("MeshPart") and disableDecals then
+            descendant.Material = "Plastic"
+            descendant.Reflectance = 0
+            descendant.TextureID = 10385902758728957
+        elseif descendant:IsA("SpecialMesh") and disableDecals then
+            descendant.TextureId = 0
+        elseif descendant:IsA("ShirtGraphic") and disableDecals then
+            descendant.ShirtGraphic = 0
+        elseif (descendant:IsA("Shirt") or descendant:IsA("Pants")) and disableDecals then
+            descendant[descendant.ClassName .. "Template"] = 0
+        end
+    end)
+end)
+
+local fpsboost = Misc:NewButton("Super FPS Boost", function()
+    local disableDecals = true
+    local gameService = game
+    local workspace = gameService.Workspace
+    local lighting = gameService.Lighting
+    local terrain = workspace.Terrain
+
+    sethiddenproperty(lighting, "Technology", 2)
+    sethiddenproperty(terrain, "Decoration", false)
+    terrain.WaterWaveSize = 0
+    terrain.WaterWaveSpeed = 0
+    terrain.WaterReflectance = 0
+    terrain.WaterTransparency = 0
+    lighting.GlobalShadows = 0
+    lighting.FogEnd = 9e9
+    lighting.Brightness = 0
+    settings().Rendering.QualityLevel = "Level01"
+
+    for _, descendant in pairs(workspace:GetDescendants()) do
+        if descendant:IsA("BasePart") and not descendant:IsA("MeshPart") then
+            descendant.Material = "Plastic"
+            descendant.Reflectance = 0
+        elseif (descendant:IsA("Decal") or descendant:IsA("Texture")) and disableDecals then
+            descendant.Transparency = 1
+        elseif descendant:IsA("ParticleEmitter") or descendant:IsA("Trail") then
+            descendant.Lifetime = NumberRange.new(0)
+        elseif descendant:IsA("Explosion") then
+            descendant.BlastPressure = 1
+            descendant.BlastRadius = 1
+        elseif descendant:IsA("Fire") or descendant:IsA("SpotLight") or descendant:IsA("Smoke") or descendant:IsA("Sparkles") then
+            descendant.Enabled = false
+        elseif descendant:IsA("MeshPart") and disableDecals then
+            descendant.Material = "Plastic"
+            descendant.Reflectance = 0
+            descendant.TextureID = 10385902758728957
+        elseif descendant:IsA("SpecialMesh") and disableDecals then
+            descendant.TextureId = 0
+        elseif descendant:IsA("ShirtGraphic") and disableDecals then
+            descendant.Graphic = 0
+        elseif (descendant:IsA("Shirt") or descendant:IsA("Pants")) and disableDecals then
+            descendant[descendant.ClassName .. "Template"] = 0
+        end
+    end
+
+    for _, effect in ipairs(lighting:GetChildren()) do
+        if effect:IsA("BlurEffect") or effect:IsA("SunRaysEffect") or effect:IsA("ColorCorrectionEffect") or effect:IsA("BloomEffect") or effect:IsA("DepthOfFieldEffect") then
+            effect.Enabled = false
+        end
+    end
+
+    workspace.DescendantAdded:Connect(function(descendant)
+        wait() -- prevent errors and shit
+        if descendant:IsA("BasePart") and not descendant:IsA("MeshPart") then
+            descendant.Material = "Plastic"
+            descendant.Reflectance = 0
+        elseif descendant:IsA("Decal") or descendant:IsA("Texture") and disableDecals then
+            descendant.Transparency = 1
+        elseif descendant:IsA("ParticleEmitter") or descendant:IsA("Trail") then
+            descendant.Lifetime = NumberRange.new(0)
+        elseif descendant:IsA("Explosion") then
+            descendant.BlastPressure = 1
+            descendant.BlastRadius = 1
+        elseif descendant:IsA("Fire") or descendant:IsA("SpotLight") or descendant:IsA("Smoke") or descendant:IsA("Sparkles") then
+            descendant.Enabled = false
+        elseif descendant:IsA("MeshPart") and disableDecals then
+            descendant.Material = "Plastic"
+            descendant.Reflectance = 0
+            descendant.TextureID = 10385902758728957
+        elseif descendant:IsA("SpecialMesh") and disableDecals then
+            descendant.TextureId = 0
+        elseif descendant:IsA("ShirtGraphic") and disableDecals then
+            descendant.ShirtGraphic = 0
+        elseif (descendant:IsA("Shirt") or descendant:IsA("Pants")) and disableDecals then
+            descendant[descendant.ClassName .. "Template"] = 0
+        end
+    end)
+end)
+
+local AutoStomp =
+    Misc:NewToggle(
+    "AutoStomp",
+    false,
+    function(value)
+        if value then
+            ScriptVariables.AutoStomp = true
+        else
+            ScriptVariables.AutoStomp = false
+        end
+    end
+)
+
+local TeleportMouse =
+    Movement:NewKeybind(
+    "Teleport [Mouse]",
+    Enum.KeyCode.World1,
+    function(input)
+        local plr = players.LocalPlayer
+        local hum = plr.Character.HumanoidRootPart
+        local mouse = plr:GetMouse()
+        mouse.KeyDown:connect(function(key)
+            if key == string.lower(input) then
+                if mouse.Target then
+                hum.CFrame = CFrame.new(mouse.Hit.x, mouse.Hit.y, mouse.Hit.z)
+                end
+            end
+        end)
+    end
+)
+
+local GetCash =
+    Combat:NewToggle(
+    "View [Target]",
+    false,
+    function(value)
+        if ScriptVariables.CurrentTarget ~= nil then
+            if value then
+                ScriptVariables.ViewTarget = value
+                Notif:Notify("Now Viewing " .. ScriptVariables.CurrentTarget, 3, "information")
+            else
+                ScriptVariables.ViewTarget = value
+            end
+        else
+            Notif:Notify("Target is nil | Please set a target", 3, "information")
+        end
+    end
+)
+
+local Goto = Combat:NewButton("Teleport To [Target]", function()
+    if ScriptVariables.CurrentTarget ~= nil then
+        players.LocalPlayer.Character.HumanoidRootPart.CFrame = players:FindFirstChild(ScriptVariables.CurrentTarget).Character.HumanoidRootPart.CFrame * CFrame.new(0,3,0)
+    else
+        Notif:Notify("Target is nil | Please set a target", 3, "information")
+    end
+end)
+
+local Getcash = Combat:NewButton("Get Cash [Target]", function()
+    if ScriptVariables.CurrentTarget ~= nil then
+        local function formatCurrency(currency)
+            return string.format("%0.2f", currency):reverse():gsub("(%d%d%d)", "%1,"):reverse():gsub("^,", "")
+        end
+        
+        local cashValue = formatCurrency(players:FindFirstChild(ScriptVariables.CurrentTarget).DataFolder.Currency.Value) 
+        Notif:Notify("Target: " .. ScriptVariables.CurrentTarget .. "'s Cash amount is: " .. cashValue, 3, "information")    
+    else
+        Notif:Notify("Target is nil | Please set a target", 3, "information")
+    end
+end)
+
+Combat:NewLabel('', "left") -- Seperate
+local DesyncAntiaimSection = Combat:NewLabel("Desync / AntiAim / Follow", "left")
+
+local TargetStrafe =
+    Combat:NewToggle(
+    "Target Strafe",
+    false,
+    function(value)
+        if value then
+            ScriptVariables.TargetStrafe = true
+            Notif:Notify("Enabled Target Strafing", 3, "information")
+        else
+            ScriptVariables.TargetStrafe = false
+            Notif:Notify("Disabled Target Strafing", 3, "information")
+        end
+    end
+):AddKeybind(Enum.KeyCode.F2)
+
+
+
+local StrafeHeight = Combat:NewSlider("Strafe Height", "", true, "/", {min = 1, max = 100, default = 1}, function(value)
+    ScriptVariables.StrafeHeight = value
+end)
+
+local StrafeDistance = Combat:NewSlider("Strafe Distance", "", true, "/", {min = 1, max = 100, default = 1}, function(value)
+    ScriptVariables.StrafeDistance = value
+end)
+
+local StrafeDistance = Combat:NewSlider("Strafe Speed", "", true, "/", {min = 1, max = 100, default = 1}, function(value)
+    ScriptVariables.StrafeSpeed = value
+end)
+
+
+local RandomOrbit =
+    Combat:NewToggle(
+    "Random Orbit",
+    false,
+    function(value)
+        if value then
+            ScriptVariables.RandomOrbit = true
+
+            RunService.RenderStepped:Connect(function ()
+                if ScriptVariables.RandomOrbit then
+                    local targetPlayer = players:FindFirstChild(ScriptVariables.CurrentTarget)
+                    if not targetPlayer then
+                        return
+                    end
+        
+                    local targetHumanoidRootPart = targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+                    if not targetHumanoidRootPart then
+                        return
+                    end
+        
+                    local rootPart = players.LocalPlayer.Character and players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                    if not rootPart then
+                        return
+                    end
+        
+                    local center = targetHumanoidRootPart.Position
+
+                    local xOffset = math.random(-ScriptVariables.RandomRange, ScriptVariables.RandomRange)
+                    local yOffset = math.random(-ScriptVariables.RandomRange, ScriptVariables.RandomRange)
+                    local zOffset = math.random(-ScriptVariables.RandomRange, ScriptVariables.RandomRange)
+
+                    local newPosition = center + Vector3.new(xOffset, yOffset, zOffset)
+
+                    rootPart.CFrame = CFrame.new(newPosition)
+                end
+            end)
+
+            Notif:Notify("Enabled Random Orbit", 3, "information")
+        else
+            ScriptVariables.RandomOrbit = false
+            Notif:Notify("Disabled Random Orbit", 3, "information")
+        end
+    end
+):AddKeybind(Enum.KeyCode.F3)
+
+local RandomRange = Combat:NewSlider("Random Range", "", true, "/", {min = 0, max = 100, default = 3}, function(value)
+    ScriptVariables.RandomRange = value
+end)
+
+local UnderGroundFollow =
+    Combat:NewToggle(
+    "Underground Follow",
+    false,
+    function(value)
+        if value then
+            ScriptVariables.UnderGroundFollow = true
+
+            RunService.RenderStepped:Connect(function ()
+                if ScriptVariables.UnderGroundFollow then
+                    local targetPlayer = players:FindFirstChild(ScriptVariables.CurrentTarget)
+                    if not targetPlayer then
+                        return
+                    end
+        
+                    local targetHumanoidRootPart = targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+                    if not targetHumanoidRootPart then
+                        return
+                    end
+        
+                    local rootPart = players.LocalPlayer.Character and players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                    if not rootPart then
+                        return
+                    end
+        
+                    local center = targetHumanoidRootPart.Position
+
+                    local newPosition = center + Vector3.new(0, -ScriptVariables.UnderGroundDistance, 0)
+
+                    rootPart.CFrame = CFrame.new(newPosition)
+                end
+            end)
+
+            Notif:Notify("Enabled Underground Follow", 3, "information")
+        else
+            ScriptVariables.UnderGroundFollow = false
+            Notif:Notify("Disabled Underground Follow", 3, "information")
+        end
+    end
+):AddKeybind(Enum.KeyCode.F4)
+
+local DistanceUnderground = Combat:NewSlider("Distance Underground", "", true, "/", {min = 0, max = 100, default = 5}, function(value)
+    ScriptVariables.UnderGroundDistance = value
+end)
+
+RunService.RenderStepped:Connect(function ()
+    if ScriptVariables.PredFollow then
+        local targetPlayer = players:FindFirstChild(ScriptVariables.CurrentTarget)
+        if not targetPlayer then
+            return
+        end
+
+        local targetHumanoidRootPart = targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if not targetHumanoidRootPart then
+            return
+        end
+
+        local rootPart = players.LocalPlayer.Character and players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if not rootPart then
+            return
+        end
+
+        local center = targetHumanoidRootPart
+
+        local userPing = getUserPing()
+        local predictionValue = calculatePredictionValue(userPing)
+
+        local newPosition = center.Position + (center.Velocity * predictionValue)
+
+        rootPart.CFrame = CFrame.new(newPosition)
+    end
+end)
+
+local PredFollow =
+    Combat:NewToggle(
+    "Prediction Follow",
+    false,
+    function(value)
+        if value then
+            ScriptVariables.PredFollow = true
+
+            Notif:Notify("Enabled Prediction Follow", 3, "information")
+        else
+            ScriptVariables.PredFollow = false
+            Notif:Notify("Disabled Prediction Follow", 3, "information")
+        end
+    end
+):AddKeybind(Enum.KeyCode.F1)
+
+local WalkSpeed =
+    Movement:NewToggle(
+    "Speed [CFrame]",
+    false,
+    function(value)
+        if value then
+            ScriptVariables.CFrameWalking = true
+        else
+            ScriptVariables.CFrameWalking = false
+        end
+    end
+):AddKeybind(Enum.KeyCode.Y)
+
+local SpeedRange = Movement:NewSlider("Speed Range", "", true, "/", {min = 1, max = 100, default = 20}, function(value)
+    ScriptVariables.CFrameWalkingSpeed = value / 16
+end)
+
+local AntiSlow =
+    Movement:NewToggle(
+    "Anti Slow",
+    false,
+    function(value)
+        if value then
+            ScriptVariables.AntiSlow = true
+        else
+            ScriptVariables.AntiSlow = false
+        end
+    end
+)
+
+local AntiJumpSlow =
+    Movement:NewToggle(
+    "Anti Jump Slow",
+    false,
+    function(value)
+        if value then
+            ScriptVariables.AntiJumpSlow = true
+        else
+            ScriptVariables.AntiJumpSlow = false
+        end
+    end
+)
+
+local SpawnCashCommand =
+    Misc:NewToggle(
+    "!SpawnCash Command [Get MoneyGun | FAKE]",
+    false,
+    function(value)
+        if value then
+            ScriptVariables.SpawnCashCommand = true
+        else
+            ScriptVariables.SpawnCashCommand = false
+        end
+    end
+)
+
+local Removefallenpartsdstrheight =
+    Misc:NewToggle(
+    "Remove Fallen Parts Destroy Height (Kill Box)",
+    false,
+    function(value)
+        if value then
+            workspace.FallenPartsDestroyHeight = -math.huge
+        else
+            workspace.FallenPartsDestroyHeight = -500
+        end
+    end
+)
+
+local ArrowLock =
+    Misc:NewToggle(
+    "Crossbow Lock [Crossbow in flower shop]",
+    false,
+    function(value)
+        ScriptVariables.ArrowLock = value
+    end
+)
+
+local BringTargetToVoid =
+    Misc:NewToggle(
+    "Drag target to hell",
+    false,
+    function(value)
+        ScriptVariables.HellTarget = value
+        if ScriptVariables.HellTarget then
+            local hrp = players.LocalPlayer.Character:FindFirstChild('HumanoidRootPart')
+            local ogpos = hrp.CFrame
+            local has
+            if not players.LocalPlayer.Backpack:FindFirstChild('[Crossbow]') or players.LocalPlayer.Character:FindFirstChild('[Crossbow]') then
+                local crossbowbuy = workspace['Ignored']['Shop']['[Crossbow] - $159']['ClickDetector']
+                if hrp and crossbowbuy then
+                    repeat
+                    hrp.CFrame = CFrame.new(-67.52098846435547, 23.12371826171875, -307.65374755859375)
+                    fireclickdetector(crossbowbuy, 1)
+                    task.wait(0.5)
+                    until players.LocalPlayer.Backpack:FindFirstChild('[Crossbow]') or players.LocalPlayer.Character:FindFirstChild('[Crossbow]') or not ScriptVariables.HellTarget
+                    has = true
+                end
+            elseif players.LocalPlayer.Backpack:FindFirstChild('[Crossbow]') or players.LocalPlayer.Character:FindFirstChild('[Crossbow]') then
+                has = true
+            end
+            task.wait(0.1)
+            if has == true and ScriptVariables.HellTarget then
+                ScriptVariables.PredFollow = true
+                game:GetService('ReplicatedStorage').DefaultChatSystemChatEvents.SayMessageRequest:FireServer("Im going to drag you to hell.", "All")
+                task.wait(1.5)
+                ScriptVariables.PredFollow = false
+                ScriptVariables.ArrowLock = true
+                local hrp = players.LocalPlayer.Character:FindFirstChild('HumanoidRootPart')
+                if hrp then
+                    while true do
+                        if not players:FindFirstChild(ScriptVariables.CurrentTarget) or not players:FindFirstChild(ScriptVariables.CurrentTarget).Character or players:FindFirstChild(ScriptVariables.CurrentTarget).Character.Humanoid.Health == 0 or not ScriptVariables.HellTarget then
+                            hrp.Velocity = Vector3.zero
+                            hrp.CFrame = ogpos
+                            ScriptVariables.ArrowLock = false
+                            ScriptVariables.PredFollow = false
+                            break
+                        else
+                            local target = players:FindFirstChild(ScriptVariables.CurrentTarget)
+                            if target then
+                            hrp.CFrame = target.Character:FindFirstChild("HumanoidRootPart").CFrame - Vector3.new(0,250,0)
+                            hrp.Velocity = Vector3.zero
+                            workspace.FallenPartsDestroyHeight = -math.huge
+                            end
+                            local Crossbow = players.LocalPlayer.Backpack:FindFirstChild('[Crossbow]') or players.LocalPlayer.Character:FindFirstChild('[Crossbow]')
+                            if Crossbow and ScriptVariables.HellTarget then
+                            Crossbow.Parent = players.LocalPlayer.Character
+                            Crossbow:Activate()
+                            end
+                            task.wait(0.01)
+                        end
+                    end
+                    hrp.Velocity = Vector3.zero
+                    hrp.CFrame = ogpos
+                    ScriptVariables.ArrowLock = false
+                    ScriptVariables.PredFollow = false
+                end
+            end
+        end
+    end
+)
+
+local AscendTarget =
+    Misc:NewToggle(
+    "Bring target to heaven",
+    false,
+    function(value)
+        ScriptVariables.HeavenTarget = value
+        if ScriptVariables.HeavenTarget then
+            local hrp = players.LocalPlayer.Character:FindFirstChild('HumanoidRootPart')
+            local ogpos = hrp.CFrame
+            local has
+            if not players.LocalPlayer.Backpack:FindFirstChild('[Crossbow]') or players.LocalPlayer.Character:FindFirstChild('[Crossbow]') then
+                local crossbowbuy = workspace['Ignored']['Shop']['[Crossbow] - $159']['ClickDetector']
+                if hrp and crossbowbuy then
+                    repeat
+                    hrp.CFrame = CFrame.new(-67.52098846435547, 23.12371826171875, -307.65374755859375)
+                    fireclickdetector(crossbowbuy, 1)
+                    task.wait(0.5)
+                    until players.LocalPlayer.Backpack:FindFirstChild('[Crossbow]') or players.LocalPlayer.Character:FindFirstChild('[Crossbow]') or not ScriptVariables.HeavenTarget
+                    has = true
+                end
+            elseif players.LocalPlayer.Backpack:FindFirstChild('[Crossbow]') or players.LocalPlayer.Character:FindFirstChild('[Crossbow]') then
+                has = true
+            end
+
+            if has == true and ScriptVariables.HeavenTarget then
+                ScriptVariables.PredFollow = true
+                game:GetService('ReplicatedStorage').DefaultChatSystemChatEvents.SayMessageRequest:FireServer("It is time, my child. Come home with me.", "All")
+                task.wait(1.5)
+                ScriptVariables.PredFollow = false
+                ScriptVariables.ArrowLock = true
+                local hrp = players.LocalPlayer.Character:FindFirstChild('HumanoidRootPart')
+
+                if hrp then
+                    while true do
+                        if not players:FindFirstChild(ScriptVariables.CurrentTarget) or not players:FindFirstChild(ScriptVariables.CurrentTarget).Character or players:FindFirstChild(ScriptVariables.CurrentTarget).Character.Humanoid.Health == 0 or not ScriptVariables.HeavenTarget then
+                            hrp.Velocity = Vector3.zero
+                            hrp.CFrame = ogpos
+                            ScriptVariables.ArrowLock = false
+                            ScriptVariables.PredFollow = false
+                            break
+                        else
+                            local target = players:FindFirstChild(ScriptVariables.CurrentTarget)
+                            if target then
+                            hrp.CFrame = target.Character:FindFirstChild("HumanoidRootPart").CFrame + Vector3.new(0,500,0)
+                            hrp.Velocity = Vector3.zero
+                            workspace.FallenPartsDestroyHeight = -math.huge
+                            end
+                            local Crossbow = players.LocalPlayer.Backpack:FindFirstChild('[Crossbow]') or players.LocalPlayer.Character:FindFirstChild('[Crossbow]')
+                            if Crossbow then
+                                Crossbow.Parent = players.LocalPlayer.Character
+                            Crossbow:Activate()
+                            end
+                            task.wait(0.01)
+                        end
+                    end
+                    hrp.Velocity = Vector3.zero
+                    hrp.CFrame = ogpos
+                    ScriptVariables.ArrowLock = false
+                    ScriptVariables.PredFollow = false
+                end
+            end
+        end
+    end
+)
+
+local grenadebreak =
+    Misc:NewToggle(
+    "Break Everyones Grenades",
+    false,
+    function(value)
+        ScriptVariables.BreakGrenades = value
+    end
+)
+
+local ESP =
+    Visuals:NewToggle(
+    "ESP",
+    false,
+    function(value)
+        Sense.teamSettings.enemy.enabled = value
+    end
+)
+
+local Boxes =
+    Visuals:NewToggle(
+    "Boxes",
+    false,
+    function(value)
+        Sense.teamSettings.enemy.box = value
+        Sense.teamSettings.enemy.boxColor[1] = Color3.new(ScriptVariables.R , ScriptVariables.G, ScriptVariables.B)
+    end
+)
+
+local Boxes3d =
+    Visuals:NewToggle(
+    "Boxes 3d",
+    false,
+    function(value)
+        Sense.teamSettings.enemy.box3d = value
+        Sense.teamSettings.enemy.box3dColor[1] = Color3.new(ScriptVariables.R , ScriptVariables.G, ScriptVariables.B)
+    end
+)
+
+local Healthbar =
+    Visuals:NewToggle(
+    "Health Bar",
+    false,
+    function(value)
+        Sense.teamSettings.enemy.healthBar = value
+    end
+)
+
+local chams =
+    Visuals:NewToggle(
+    "Chams",
+    false,
+    function(value)
+        Sense.teamSettings.enemy.chams = value
+        Sense.teamSettings.enemy.chamsFillColor[1] = Color3.new(ScriptVariables.R , ScriptVariables.G, ScriptVariables.B)
+        Sense.teamSettings.enemy.chamsOutlineColor[1] = Color3.new(ScriptVariables.R , ScriptVariables.G, ScriptVariables.B)
+    end
+)
+
+local HealthText =
+    Visuals:NewToggle(
+    "Health Text",
+    false,
+    function(value)
+        Sense.teamSettings.enemy.healthtext = value
+    end
+)
+
+local Tracers =
+    Visuals:NewToggle(
+    "Tracers",
+    false,
+    function(value)
+        Sense.teamSettings.enemy.tracer = value
+        Sense.teamSettings.enemy.tracerColor[1] = Color3.new(ScriptVariables.R , ScriptVariables.G, ScriptVariables.B)
+    end
+)
+
+local Names =
+    Visuals:NewToggle(
+    "Names",
+    false,
+    function(value)
+        Sense.teamSettings.enemy.name = value
+        Sense.teamSettings.enemy.nameColor[1] = Color3.new(ScriptVariables.R , ScriptVariables.G, ScriptVariables.B)
+    end
+)
+
+local espr = Visuals:NewTextbox("ESP Red", "255", "RGB [R]", "numbers", "small", true, false, function(val)
+    ScriptVariables.R = tonumber(val)
+end)
+
+local espg = Visuals:NewTextbox("ESP Green", "255", "RGB [G]", "numbers", "small", true, false, function(val)
+    ScriptVariables.G = tonumber(val)
+end)
+
+local espb = Visuals:NewTextbox("ESP Blue", "255", "RGB [B]", "numbers", "small", true, false, function(val)
+    ScriptVariables.B = tonumber(val)
+end)
+
+local MenuKB =
+    Settings:NewKeybind(
+    "Menu Keybind",
+    Enum.KeyCode.F6,
+    function(input)
+        local plr = players.LocalPlayer
+        local mouse = plr:GetMouse()
+        mouse.KeyDown:connect(function(key)
+            if key == string.lower(input) then
+                Init:UpdateKeybind(Enum.KeyCode[string.upper(input)])
+            end
+        end)
+    end
+)
+
+else
+    game:GetService("StarterGui"):SetCore("SendNotification",{
+        Title = "WL SYS",
+        Text = "You are blacklisted or we are unable to find your user",
+    })
+end
