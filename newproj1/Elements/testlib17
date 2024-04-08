@@ -112,11 +112,7 @@ local ScriptVariables = {
 --// Functions
 local targguicurrentpos = nil
 
-local routine = coroutine.wrap(function()
-    if ScriptVariables.TargetGui then
-        if game:GetService("CoreGui"):FindFirstChild(newtargguiname) then
-            game:GetService("CoreGui"):FindFirstChild(newtargguiname):Destroy()
-        end
+coroutine.wrap(function()
         local Converted = {
             ["_TargetGUI"] = Instance.new("ScreenGui");
             ["_Holder"] = Instance.new("Frame");
@@ -377,73 +373,64 @@ local routine = coroutine.wrap(function()
             end
         end)
 
+    game:GetService('RunService').Heartbeat:Connect(function ()
+        if ScriptVariables.TargetGui then
+            Converted["_TargetGUI"].Enabled = true
 
-        Converted["_Target"].Text = ScriptVariables.CurrentTarget
-        local player = players:FindFirstChild(ScriptVariables.CurrentTarget)
+            Converted["_Target"].Text = ScriptVariables.CurrentTarget
+            local player = players:FindFirstChild(ScriptVariables.CurrentTarget)
+    
+            local userId = player.UserId
+            local thumbType = Enum.ThumbnailType.HeadShot
+            local thumbSize = Enum.ThumbnailSize.Size420x420
+            local content, isReady = Players:GetUserThumbnailAsync(userId, thumbType, thumbSize)
+    
+            local bar = Converted["_Healthbar1"]
+            local hpText = Converted["_Health"]
+            local player = players:FindFirstChild(ScriptVariables.CurrentTarget)
+            repeat wait() until player.Character
+            local character = player.Character
+    
+            local function update()
+                local humanoid = character:WaitForChild("Humanoid")
+                bar.Size = UDim2.new(humanoid.Health / humanoid.MaxHealth, 0, 1, 0)
+                hpText.Text = 'Health - '.. math.ceil(humanoid.Health) .. '/'.. math.ceil(humanoid.MaxHealth)
+            end
+    
+            local function setConnections()
+                local humanoid = character:WaitForChild("Humanoid")
+                if humanoid then
+                    humanoid:GetPropertyChangedSignal("Health"):Connect(update)
+                    humanoid:GetPropertyChangedSignal("MaxHealth"):Connect(update)
+                end
+                update()
+            end
+    
+            local newbar = Converted["_Healthbar"]
+            local newhptext = Converted["_Armour"]
 
-        local userId = player.UserId
-        local thumbType = Enum.ThumbnailType.HeadShot
-        local thumbSize = Enum.ThumbnailSize.Size420x420
-        local content, isReady = Players:GetUserThumbnailAsync(userId, thumbType, thumbSize)
-
-        local bar = Converted["_Healthbar1"]
-        local hpText = Converted["_Health"]
-        local player = players:FindFirstChild(ScriptVariables.CurrentTarget)
-        repeat wait() until player.Character
-        local connection_health
-        local connection_max_health
-        local character = player.Character
-
-        local function update()
-            local humanoid = character:WaitForChild("Humanoid")
-            bar:TweenSize(UDim2.new(humanoid.Health / humanoid.MaxHealth, 0, 1, 0), Enum.EasingDirection.InOut, Enum.EasingStyle.Sine, 0.3, true)
-            hpText.Text = 'Health - '.. math.ceil(humanoid.Health) .. '/'.. math.ceil(humanoid.MaxHealth)
-        end
-
-        local function setConnections()
-            local humanoid = character:WaitForChild("Humanoid")
-            connection_health = humanoid:GetPropertyChangedSignal("Health"):Connect(update)
-            connection_max_health = humanoid:GetPropertyChangedSignal("MaxHealth"):Connect(update)
-            update()
-        end
-
-        player.CharacterAdded:Connect(function(char)
-            character = char
-            if connection_health then connection_health:Disconnect() end
-            if connection_max_health then connection_max_health:Disconnect() end
+            local function updatea()
+                newbar.Size = UDim2.new(character.BodyEffects.Armor.Value / 100, 0, 1, 0)
+                newhptext.Text = 'Armour - '.. math.ceil(character.BodyEffects.Armor.Value) .. '/'.. math.ceil(100)
+            end
+            
+            local function setConnectionsa()
+                local arm = character:FindFirstChild('BodyEffects'):FindFirstChild('Armor')
+                if arm then
+                    arm:GetPropertyChangedSignal("Value"):Connect(updatea)
+                end
+                updatea()
+            end
+    
             setConnections()
-        end)
-
-        local newbar = Converted["_Healthbar"]
-        local newhptext = Converted["_Armour"]
-        local connection_arm
-        local connection_max_arm
-
-        local function updatea()
-            newbar:TweenSize(UDim2.new(character.BodyEffects.Armor.Value / 100, 0, 1, 0), Enum.EasingDirection.InOut, Enum.EasingStyle.Sine, 0.3, true)
-            newhptext.Text = 'Armour - '.. math.ceil(character.BodyEffects.Armor.Value) .. '/'.. math.ceil(100)
-        end
-        
-        local function setConnectionsa()
-            local humanoid = character:WaitForChild("Humanoid")
-            connection_arm = humanoid:GetPropertyChangedSignal("Health"):Connect(update)
-            connection_max_arm = humanoid:GetPropertyChangedSignal("MaxHealth"):Connect(update)
-            updatea()
-        end
-        
-        player.CharacterAdded:Connect(function(char)
-            character = char
-            if connection_arm then connection_arm:Disconnect() end
-            if connection_max_arm then connection_max_arm:Disconnect() end
             setConnectionsa()
-        end)
-
-        setConnections()
-        setConnectionsa()
-
-        Converted["_TargetFrame"].Image = (isReady and content)
-    end
-end)
+    
+            Converted["_TargetFrame"].Image = (isReady and content)
+        else
+            Converted["_TargetGUI"].Enabled = false
+        end
+    end)
+end)()
 
 local function transfernetworkowenership(arg1, arg2, truebreak)
     if not truebreak then
@@ -677,8 +664,6 @@ function UnsetTarget()
         BillboardGui.Adornee = nil
         BillboardGui.Enabled = false
     end
-    local thread = routine()
-    coroutine.yield(thread)
     Notif:Notify("Target Unset", 3, "information")
 end
 
@@ -693,9 +678,6 @@ function SetClosest()
                 BillboardGui.Enabled = true
                 Highlight.Adornee = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character
                 BillboardGui.Adornee = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character:FindFirstChild("Head")
-                if ScriptVariables.TargetGui then
-                   coroutine.create(routine())
-                end
             end
             Notif:Notify("Target Set: " .. ScriptVariables.CurrentTarget, 3, "information")
         end
