@@ -397,7 +397,7 @@ end
 
 game:GetService("RunService").RenderStepped:Connect(
     function()
-        if ScriptVariables.VisualizeTargetSet and ScriptVariables.CurrentTarget ~= nil and game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character then
+        if ScriptVariables.VisualizeTargetSet and ScriptVariables.CurrentTarget ~= nil and game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget) and game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character then
             BillboardGui.Enabled = true
             Highlight.Adornee = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character
             BillboardGui.Adornee = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character:FindFirstChild("Head")
