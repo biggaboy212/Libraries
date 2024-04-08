@@ -6,6 +6,7 @@ if game:GetService('Players').LocalPlayer.UserId ~= nil then
     })
 
 --// Variables
+local newtargguiname = game:GetService('HttpService'):GenerateGUID(true)
 local Version = 5.84
 local library = loadstring(game:HttpGet('https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua'))()
 local Sense = loadstring(game:HttpGet('https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj1/Elements/senseadjusted'))()
@@ -55,7 +56,7 @@ local ScriptVariables = {
     TargetSetKey = 'T',
 
     CurrentTarget = nil,
-    DynamicColour = true,
+    TargetGui = false,
 
     ViewTarget= false,
 
@@ -109,6 +110,339 @@ local ScriptVariables = {
 }
 
 --// Functions
+local targguicurrentpos = nil
+
+local targthread = task.spawn(function ()
+    if game:GetService("CoreGui"):FindFirstChild(newtargguiname) then
+        game:GetService("CoreGui"):FindFirstChild(newtargguiname):Destroy()
+    end
+    local Converted = {
+        ["_TargetGUI"] = Instance.new("ScreenGui");
+        ["_Holder"] = Instance.new("Frame");
+        ["_Outline"] = Instance.new("Frame");
+        ["_Name"] = Instance.new("TextLabel");
+        ["_Container"] = Instance.new("Frame");
+        ["_TargetFrame"] = Instance.new("ImageLabel");
+        ["_Armour"] = Instance.new("TextLabel");
+        ["_bar"] = Instance.new("Frame");
+        ["_UIGradient"] = Instance.new("UIGradient");
+        ["_Healthbar"] = Instance.new("Frame");
+        ["_UIGradient1"] = Instance.new("UIGradient");
+        ["_Target"] = Instance.new("TextLabel");
+        ["_Divider"] = Instance.new("Frame");
+        ["_Health"] = Instance.new("TextLabel");
+        ["_bar1"] = Instance.new("Frame");
+        ["_UIGradient2"] = Instance.new("UIGradient");
+        ["_Healthbar1"] = Instance.new("Frame");
+        ["_UIGradient3"] = Instance.new("UIGradient");
+    }
+    
+    Converted["_TargetGUI"].IgnoreGuiInset = true
+    Converted["_TargetGUI"].ScreenInsets = Enum.ScreenInsets.None
+    Converted["_TargetGUI"].ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    Converted["_TargetGUI"].Name = newtargguiname
+    Converted["_TargetGUI"].Parent = game:GetService("CoreGui")
+    
+    
+    Converted["_Holder"].AnchorPoint = Vector2.new(0.5, 0.5)
+    Converted["_Holder"].BackgroundColor3 = Color3.fromRGB(25.000000409781933, 25.000000409781933, 25.000000409781933)
+    Converted["_Holder"].BorderColor3 = Color3.fromRGB(0, 0, 0)
+    if targguicurrentpos == nil then
+        Converted["_Holder"].Position = UDim2.new(0.543272793, 0, 0.880403101, 0)
+    else
+        Converted["_Holder"].Position = targguicurrentpos
+    end
+    Converted["_Holder"].Size = UDim2.new(0, 467, 0, 153)
+    Converted["_Holder"].Name = "Holder"
+    Converted["_Holder"].Parent = Converted["_TargetGUI"]
+    
+    Converted["_Outline"].AnchorPoint = Vector2.new(0.5, 0.5)
+    Converted["_Outline"].BackgroundColor3 = Color3.fromRGB(27.000000290572643, 27.000000290572643, 27.000000290572643)
+    Converted["_Outline"].BorderColor3 = Color3.fromRGB(82.00000271201134, 50.000000819563866, 124.00000020861626)
+    Converted["_Outline"].Position = UDim2.new(0.499999881, 0, 0.500000179, 0)
+    Converted["_Outline"].Size = UDim2.new(0, 462, 0, 147)
+    Converted["_Outline"].Name = "Outline"
+    Converted["_Outline"].Parent = Converted["_Holder"]
+    
+    Converted["_Name"].Font = Enum.Font.RobotoMono
+    Converted["_Name"].Text = "Target"
+    Converted["_Name"].TextColor3 = Color3.fromRGB(255, 255, 255)
+    Converted["_Name"].TextSize = 15
+    Converted["_Name"].TextXAlignment = Enum.TextXAlignment.Left
+    Converted["_Name"].TextYAlignment = Enum.TextYAlignment.Top
+    Converted["_Name"].AnchorPoint = Vector2.new(0.5, 0.5)
+    Converted["_Name"].BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Converted["_Name"].BackgroundTransparency = 1
+    Converted["_Name"].BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Converted["_Name"].BorderSizePixel = 0
+    Converted["_Name"].Position = UDim2.new(0.5, 0, 0.500000238, 0)
+    Converted["_Name"].Size = UDim2.new(0, 448, 0, 134)
+    Converted["_Name"].Name = "Name"
+    Converted["_Name"].Parent = Converted["_Outline"]
+    
+    Converted["_Container"].BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    Converted["_Container"].BackgroundTransparency = 0.5
+    Converted["_Container"].BorderColor3 = Color3.fromRGB(82.00000271201134, 50.000000819563866, 124.00000020861626)
+    Converted["_Container"].Position = UDim2.new(0.0134180905, 0, 0.201457262, 0)
+    Converted["_Container"].Size = UDim2.new(0, 448, 0, 110)
+    Converted["_Container"].Name = "Container"
+    Converted["_Container"].Parent = Converted["_Outline"]
+    
+    Converted["_TargetFrame"].AnchorPoint = Vector2.new(0, 0.5)
+    Converted["_TargetFrame"].BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Converted["_TargetFrame"].BackgroundTransparency = 1
+    Converted["_TargetFrame"].BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Converted["_TargetFrame"].BorderSizePixel = 0
+    Converted["_TargetFrame"].Position = UDim2.new(0.0189883374, 0, 0.5, 0)
+    Converted["_TargetFrame"].Size = UDim2.new(0, 81, 0, 82)
+    Converted["_TargetFrame"].Name = "TargetFrame"
+    Converted["_TargetFrame"].Parent = Converted["_Container"]
+    
+    Converted["_Armour"].Font = Enum.Font.RobotoMono
+    Converted["_Armour"].Text = "Armour"
+    Converted["_Armour"].TextColor3 = Color3.fromRGB(255, 255, 255)
+    Converted["_Armour"].TextSize = 14
+    Converted["_Armour"].TextStrokeTransparency = 0
+    Converted["_Armour"].TextXAlignment = Enum.TextXAlignment.Left
+    Converted["_Armour"].TextYAlignment = Enum.TextYAlignment.Top
+    Converted["_Armour"].BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Converted["_Armour"].BackgroundTransparency = 1
+    Converted["_Armour"].BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Converted["_Armour"].BorderSizePixel = 0
+    Converted["_Armour"].LayoutOrder = 3
+    Converted["_Armour"].Position = UDim2.new(0.232999936, 0, 0.654999971, 0)
+    Converted["_Armour"].Size = UDim2.new(0, 332, 0, 20)
+    Converted["_Armour"].Name = "Armour"
+    Converted["_Armour"].Parent = Converted["_Container"]
+    
+    Converted["_bar"].AnchorPoint = Vector2.new(1, 0)
+    Converted["_bar"].BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Converted["_bar"].BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Converted["_bar"].BorderSizePixel = 0
+    Converted["_bar"].Position = UDim2.new(1.00672364, 0, 1.00730586, 0)
+    Converted["_bar"].Size = UDim2.new(0, 332, 0, 10)
+    Converted["_bar"].Name = "bar"
+    Converted["_bar"].Parent = Converted["_Armour"]
+    
+    Converted["_UIGradient"].Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(57.00000040233135, 57.00000040233135, 57.00000040233135)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(29.000000171363354, 29.000000171363354, 29.000000171363354))
+    }
+    Converted["_UIGradient"].Rotation = 90
+    Converted["_UIGradient"].Parent = Converted["_bar"]
+    
+    Converted["_Healthbar"].BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Converted["_Healthbar"].BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Converted["_Healthbar"].BorderSizePixel = 0
+    Converted["_Healthbar"].Position = UDim2.new(-1.83840825e-07, 0, 0, 0)
+    Converted["_Healthbar"].Size = UDim2.new(0.5, 0, 1, 0)
+    Converted["_Healthbar"].Name = "Healthbar"
+    Converted["_Healthbar"].Parent = Converted["_bar"]
+    
+    Converted["_UIGradient1"].Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 52.000000700354576, 135.00000715255737)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 21.000000648200512, 77.00000301003456))
+    }
+    Converted["_UIGradient1"].Rotation = 90
+    Converted["_UIGradient1"].Parent = Converted["_Healthbar"]
+    
+    Converted["_Target"].Font = Enum.Font.RobotoMono
+    Converted["_Target"].Text = "Target"
+    Converted["_Target"].TextColor3 = Color3.fromRGB(255, 255, 255)
+    Converted["_Target"].TextSize = 14
+    Converted["_Target"].TextStrokeTransparency = 0
+    Converted["_Target"].TextXAlignment = Enum.TextXAlignment.Left
+    Converted["_Target"].TextYAlignment = Enum.TextYAlignment.Top
+    Converted["_Target"].BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Converted["_Target"].BackgroundTransparency = 1
+    Converted["_Target"].BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Converted["_Target"].BorderSizePixel = 0
+    Converted["_Target"].LayoutOrder = 1
+    Converted["_Target"].Position = UDim2.new(0.232999995, 0, 0.0700000003, 0)
+    Converted["_Target"].Size = UDim2.new(0, 332, 0, 20)
+    Converted["_Target"].Name = "Target"
+    Converted["_Target"].Parent = Converted["_Container"]
+    
+    Converted["_Divider"].AnchorPoint = Vector2.new(1, 1)
+    Converted["_Divider"].BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Converted["_Divider"].BackgroundTransparency = 0.800000011920929
+    Converted["_Divider"].BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Converted["_Divider"].BorderSizePixel = 0
+    Converted["_Divider"].Position = UDim2.new(1.00672364, 0, 1.00730515, 0)
+    Converted["_Divider"].Size = UDim2.new(0, 332, 0, 1)
+    Converted["_Divider"].Name = "Divider"
+    Converted["_Divider"].Parent = Converted["_Target"]
+    
+    Converted["_Health"].Font = Enum.Font.RobotoMono
+    Converted["_Health"].Text = "Health - nil"
+    Converted["_Health"].TextColor3 = Color3.fromRGB(255, 255, 255)
+    Converted["_Health"].TextSize = 14
+    Converted["_Health"].TextStrokeTransparency = 0
+    Converted["_Health"].TextXAlignment = Enum.TextXAlignment.Left
+    Converted["_Health"].TextYAlignment = Enum.TextYAlignment.Top
+    Converted["_Health"].BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Converted["_Health"].BackgroundTransparency = 1
+    Converted["_Health"].BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Converted["_Health"].BorderSizePixel = 0
+    Converted["_Health"].LayoutOrder = 2
+    Converted["_Health"].Position = UDim2.new(0.233284399, 0, 0.310909212, 0)
+    Converted["_Health"].Size = UDim2.new(0, 332, 0, 20)
+    Converted["_Health"].Name = "Health"
+    Converted["_Health"].Parent = Converted["_Container"]
+    
+    Converted["_bar1"].AnchorPoint = Vector2.new(1, 0)
+    Converted["_bar1"].BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Converted["_bar1"].BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Converted["_bar1"].BorderSizePixel = 0
+    Converted["_bar1"].Position = UDim2.new(1.00672364, 0, 1.00730586, 0)
+    Converted["_bar1"].Size = UDim2.new(0, 332, 0, 10)
+    Converted["_bar1"].Name = "bar"
+    Converted["_bar1"].Parent = Converted["_Health"]
+    
+    Converted["_UIGradient2"].Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(57.00000040233135, 57.00000040233135, 57.00000040233135)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(29.000000171363354, 29.000000171363354, 29.000000171363354))
+    }
+    Converted["_UIGradient2"].Rotation = 90
+    Converted["_UIGradient2"].Parent = Converted["_bar1"]
+    
+    Converted["_Healthbar1"].BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Converted["_Healthbar1"].BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Converted["_Healthbar1"].BorderSizePixel = 0
+    Converted["_Healthbar1"].Position = UDim2.new(-1.83840825e-07, 0, 0, 0)
+    Converted["_Healthbar1"].Size = UDim2.new(0.5, 0, 1, 0)
+    Converted["_Healthbar1"].Name = "Healthbar"
+    Converted["_Healthbar1"].Parent = Converted["_bar1"]
+    
+    Converted["_UIGradient3"].Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(32.00000189244747, 135.00000715255737, 0)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 77.00000301003456, 13.000000175088644))
+    }
+    Converted["_UIGradient3"].Rotation = 90
+    Converted["_UIGradient3"].Parent = Converted["_Healthbar1"]
+    
+    --// Services
+    local Players = players
+    local UIS = game:GetService("UserInputService")
+    
+    --// Variables
+    local UI = Converted["_Holder"]
+    
+    local Player = Players.LocalPlayer
+    local Mouse = Player:GetMouse()
+    
+    local Hovered = false
+    local Holding = false
+    local MoveCon = nil
+    
+    local InitialX, InitialY, UIInitialPos
+    
+    --// Functions
+    
+    local function Drag()
+        if Holding == false then MoveCon:Disconnect(); return end
+        local distanceMovedX = InitialX - Mouse.X
+        local distanceMovedY = InitialY - Mouse.Y
+    
+        UI.Position = UIInitialPos - UDim2.new(0, distanceMovedX, 0, distanceMovedY)
+        targguicurrentpos = UI.Position
+    end
+    
+    --// Connections
+    
+    UI.MouseEnter:Connect(function()
+        Hovered = true
+    end)
+    
+    UI.MouseLeave:Connect(function()
+        Hovered = false
+    end)
+    
+    UIS.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            Holding = Hovered
+            if Holding then
+                InitialX, InitialY = Mouse.X, Mouse.Y
+                UIInitialPos = UI.Position
+    
+                MoveCon = Mouse.Move:Connect(Drag)
+            end
+        end
+    end)
+    
+    UIS.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            Holding = false
+        end
+    end)
+
+
+    Converted["_Target"].Text = ScriptVariables.CurrentTarget
+    local player = players:FindFirstChild(ScriptVariables.CurrentTarget)
+
+    local userId = player.UserId
+    local thumbType = Enum.ThumbnailType.HeadShot
+    local thumbSize = Enum.ThumbnailSize.Size420x420
+    local content, isReady = Players:GetUserThumbnailAsync(userId, thumbType, thumbSize)
+
+    local bar = Converted["_Healthbar1"]
+    local hpText = Converted["_Health"]
+    local player = players:FindFirstChild(ScriptVariables.CurrentTarget)
+    repeat wait() until player.Character
+    local connection_health
+    local connection_max_health
+    local character = player.Character
+
+    local function update()
+        local humanoid = character:WaitForChild("Humanoid")
+        bar:TweenSize(UDim2.new(humanoid.Health / humanoid.MaxHealth, 0, 1, 0), Enum.EasingDirection.InOut, Enum.EasingStyle.Sine, 0.3, true)
+        hpText.Text = 'Health - '.. math.ceil(humanoid.Health) .. '/'.. math.ceil(humanoid.MaxHealth)
+    end
+
+    local function setConnections()
+        local humanoid = character:WaitForChild("Humanoid")
+        connection_health = humanoid:GetPropertyChangedSignal("Health"):Connect(update)
+        connection_max_health = humanoid:GetPropertyChangedSignal("MaxHealth"):Connect(update)
+        update()
+    end
+
+    player.CharacterAdded:Connect(function(char)
+        character = char
+        if connection_health then connection_health:Disconnect() end
+        if connection_max_health then connection_max_health:Disconnect() end
+        setConnections()
+    end)
+
+    local newbar = Converted["_Healthbar"]
+    local newhptext = Converted["_Armour"]
+    local connection_arm
+    local connection_max_arm
+
+    local function updatea()
+        newbar:TweenSize(UDim2.new(character.BodyEffects.Armor.Value / 100, 0, 1, 0), Enum.EasingDirection.InOut, Enum.EasingStyle.Sine, 0.3, true)
+        newhptext.Text = 'Armour - '.. math.ceil(character.BodyEffects.Armor.Value) .. '/'.. math.ceil(100)
+    end
+    
+    local function setConnectionsa()
+        local humanoid = character:WaitForChild("Humanoid")
+        connection_arm = humanoid:GetPropertyChangedSignal("Health"):Connect(update)
+        connection_max_arm = humanoid:GetPropertyChangedSignal("MaxHealth"):Connect(update)
+        updatea()
+    end
+    
+    player.CharacterAdded:Connect(function(char)
+        character = char
+        if connection_arm then connection_arm:Disconnect() end
+        if connection_max_arm then connection_max_arm:Disconnect() end
+        setConnectionsa()
+    end)
+
+    setConnections()
+    setConnectionsa()
+
+    Converted["_TargetFrame"].Image = (isReady and content)
+end)
+
 local function transfernetworkowenership(arg1, arg2, truebreak)
     if not truebreak then
         arg1.CFrame = arg2.CFrame
@@ -341,6 +675,7 @@ function UnsetTarget()
         BillboardGui.Adornee = nil
         BillboardGui.Enabled = false
     end
+    task.cancel(targthread)
     Notif:Notify("Target Unset", 3, "information")
 end
 
@@ -355,6 +690,9 @@ function SetClosest()
                 BillboardGui.Enabled = true
                 Highlight.Adornee = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character
                 BillboardGui.Adornee = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character:FindFirstChild("Head")
+                if ScriptVariables.TargetGui then
+                    task.spawn(targthread)
+                end
             end
             Notif:Notify("Target Set: " .. ScriptVariables.CurrentTarget, 3, "information")
         end
