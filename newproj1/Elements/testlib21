@@ -426,8 +426,9 @@ coroutine.wrap(function()
                 
                         setConnections()
                         setConnectionsa()
-                
-                        Converted["_TargetFrame"].Image = (isReady and content)
+                        if isReady and content ~= nil then
+                            Converted["_TargetFrame"].Image = (content)
+                        end
                     end
                 end
             end
