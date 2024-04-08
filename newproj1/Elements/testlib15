@@ -112,7 +112,7 @@ local ScriptVariables = {
 --// Functions
 local targguicurrentpos = nil
 
-local targthread = task.spawn(function ()
+local routine = coroutine.wrap(function()
     if ScriptVariables.TargetGui then
         if game:GetService("CoreGui"):FindFirstChild(newtargguiname) then
             game:GetService("CoreGui"):FindFirstChild(newtargguiname):Destroy()
@@ -445,8 +445,6 @@ local targthread = task.spawn(function ()
     end
 end)
 
-task.cancel(targthread)
-
 local function transfernetworkowenership(arg1, arg2, truebreak)
     if not truebreak then
         arg1.CFrame = arg2.CFrame
@@ -679,7 +677,7 @@ function UnsetTarget()
         BillboardGui.Adornee = nil
         BillboardGui.Enabled = false
     end
-    task.cancel(targthread)
+    coroutine.close(routine())
     Notif:Notify("Target Unset", 3, "information")
 end
 
@@ -695,7 +693,7 @@ function SetClosest()
                 Highlight.Adornee = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character
                 BillboardGui.Adornee = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character:FindFirstChild("Head")
                 if ScriptVariables.TargetGui then
-                    task.spawn(targthread)
+                   coroutine.create(routine())
                 end
             end
             Notif:Notify("Target Set: " .. ScriptVariables.CurrentTarget, 3, "information")
@@ -913,25 +911,11 @@ local VisualizeTargetSet =
 local targgui = 
 Combat:NewToggle(
     "Target Gui",
-    true,
+    false,
     function(value)
         ScriptVariables.TargetGui = value
     end
 )
-
-local TargetTracers =
-    Combat:NewToggle(
-    "Target Set Tracers",
-    true,
-    function(value)
-        if value then
-            ScriptVariables.TargetTracers = true
-        else
-            ScriptVariables.TargetTracers = false
-        end
-    end
-)
-
 
 local FOVRadius = Combat:NewSlider("FOV Radius", "", true, "/", {min = 1, max = 1000, default = 100}, function(value)
     ScriptVariables.VisualizeTargetSetRadius = value
