@@ -677,7 +677,8 @@ function UnsetTarget()
         BillboardGui.Adornee = nil
         BillboardGui.Enabled = false
     end
-    coroutine.close(routine())
+    local thread = routine()
+    coroutine.yield(thread)
     Notif:Notify("Target Unset", 3, "information")
 end
 
