@@ -41,12 +41,12 @@ TextLabel.TextStrokeTransparency = 0
 TextLabel.TextSize = 15
 TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 TextLabel.Text = "Target"
-TextLabel.Font = Enum.Font.Fantasy
+TextLabel.Font = Enum.Font['Code']
 TextLabel.Parent = BillboardGui
 
 local Highlight = Instance.new("Highlight")
 Highlight.FillColor = Color3.fromRGB(255, 255, 255)
-Highlight.Parent = BillboardGui
+Highlight.Parent = game:GetService('CoreGui')
 
 local ScriptVariables = {
     TargetSetKey = 'T',
