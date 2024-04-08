@@ -398,6 +398,16 @@ end
 game:GetService("RunService").RenderStepped:Connect(
     function()
 
+        if ScriptVariables.VisualizeTargetSet and game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character and Highlight and BillboardGui then
+            BillboardGui.Enabled = true
+            Highlight.Adornee = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character
+            BillboardGui.Adornee = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character:FindFirstChild("Head")
+        elseif Highlight and BillboardGui then
+            BillboardGui.Enabled = false
+            Highlight.Adornee = nil
+            BillboardGui.Adornee = nil
+        end
+
         Sense.teamSettings.enemy.box3dColor[1] = Color3.new(ScriptVariables.R , ScriptVariables.G, ScriptVariables.B)
         Sense.teamSettings.enemy.boxColor[1] = Color3.new(ScriptVariables.R , ScriptVariables.G, ScriptVariables.B)
         Sense.teamSettings.enemy.tracerColor[1] = Color3.new(ScriptVariables.R , ScriptVariables.G, ScriptVariables.B)
@@ -545,10 +555,16 @@ local VisualizeTargetSet =
     true,
     function(value)
         ScriptVariables.VisualizeTargetSet = value
-        if not value then
+        if not value and Highlight and BillboardGui then
             Highlight.Adornee = nil
             BillboardGui.Adornee = nil
             BillboardGui.Enabled = false
+        elseif value and ScriptVariables.CurrentTarget and Highlight and BillboardGui then
+            if game:GetService("Players"):FindFirstChild(ScriptVariables.CurrentTarget) and game:GetService("Players"):FindFirstChild(ScriptVariables.CurrentTarget).Character then
+                Highlight.Adornee = game:GetService("Players"):FindFirstChild(ScriptVariables.CurrentTarget).Character
+                BillboardGui.Adornee = game:GetService("Players"):FindFirstChild(ScriptVariables.CurrentTarget).Character:FindFirstChild('Head')
+                BillboardGui.Enabled = true
+            end
         end
     end
 )
