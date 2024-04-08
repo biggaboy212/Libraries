@@ -374,7 +374,7 @@ coroutine.wrap(function()
         end)
 
     game:GetService('RunService').Heartbeat:Connect(function ()
-        if ScriptVariables.TargetGui then
+        if ScriptVariables.TargetGui and ScriptVariables.CurrentTarget ~= nil then
             Converted["_TargetGUI"].Enabled = true
 
             Converted["_Target"].Text = ScriptVariables.CurrentTarget
