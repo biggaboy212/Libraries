@@ -44,9 +44,12 @@ TextLabel.Text = "Target"
 TextLabel.Font = Enum.Font['Code']
 TextLabel.Parent = BillboardGui
 
+local Folder = Instance.new('Folder')
+Folder.Parent = game:GetService('Workspace')
+
 local Highlight = Instance.new("Highlight")
 Highlight.FillColor = Color3.fromRGB(255, 255, 255)
-Highlight.Parent = game:GetService('CoreGui')
+Highlight.Parent = Folder
 
 local ScriptVariables = {
     TargetSetKey = 'T',
@@ -115,9 +118,9 @@ local function transfernetworkowenership(arg1, arg2, truebreak)
 end
 
 game:GetService("RunService").Heartbeat:Connect(function ()
-    if ScriptVariables.ArrowLock and ScriptVariables.CurrentTarget ~= nil then
+    if ScriptVariables.ArrowLock and ScriptVariables.CurrentTarget ~= nil and game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget) then
         local Arrow = game:GetService('Workspace'):FindFirstChild('Arrow')
-        local TW = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character
+        local TW = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character or game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).CharacterAdded:Wait()
         if Arrow and TW then
             local RootPart = TW:FindFirstChild('HumanoidRootPart')
             if RootPart then
@@ -140,7 +143,7 @@ game:GetService("RunService").Heartbeat:Connect(function ()
             print('grenade found, transferring nwo')
             local RootPart = workspace['Ignored']['CENTER_OF_MAP']
             if RootPart then
-                transfernetworkowenership(grenade, RootPart)
+                transfernetworkowenership(grenade, RootPart, true)
             end
         end
 
@@ -541,10 +544,11 @@ local VisualizeTargetSet =
     "Visualize Target Set",
     true,
     function(value)
-        if value then
-            ScriptVariables.VisualizeTargetSet = true
-        else
-            ScriptVariables.VisualizeTargetSet = false
+        ScriptVariables.VisualizeTargetSet = value
+        if not value then
+            Highlight.Adornee = nil
+            BillboardGui.Adornee = nil
+            BillboardGui.Enabled = false
         end
     end
 )
