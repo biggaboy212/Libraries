@@ -6,7 +6,7 @@ if game:GetService('Players').LocalPlayer.UserId ~= nil then
     })
 
 --// Variables
-local Version = 5.82
+local Version = 5.83
 local library = loadstring(game:HttpGet('https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj2/xsx%20Lib%20Source.lua'))()
 local Sense = loadstring(game:HttpGet('https://raw.githubusercontent.com/biggaboy212/Libraries/main/newproj1/Elements/senseadjusted'))()
 Sense.Load()
@@ -336,6 +336,7 @@ function UnsetTarget()
     if Highlight and BillboardGui then
         Highlight.Adornee = nil
         BillboardGui.Adornee = nil
+        BillboardGui.Enabled = false
     end
     Notif:Notify("Target Unset", 3, "information")
 end
@@ -348,6 +349,7 @@ function SetClosest()
         else
             ScriptVariables.CurrentTarget = ClosestPlayer.Name
             if ScriptVariables.VisualizeTargetSet and game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character and Highlight and BillboardGui then
+                BillboardGui.Enabled = true
                 Highlight.Adornee = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character
                 BillboardGui.Adornee = game:GetService('Players'):FindFirstChild(ScriptVariables.CurrentTarget).Character:FindFirstChild("Head")
             end
